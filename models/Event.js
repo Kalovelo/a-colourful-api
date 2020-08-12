@@ -43,11 +43,10 @@ const EventSchema = new Schema({
   },
   summary: {
     type: String,
-    required: [true, "A summary is required"],
   },
   date: {
     type: Date,
-    required: [true, "An event has a date is required"],
+    required: [true, "An event date is required"],
   },
   level: {
     type: String,
@@ -68,7 +67,8 @@ const EventSchema = new Schema({
   cheatsheet: [cheatSheetCommandBlockSchema],
   images: [{ data: Buffer, contentType: String }],
   arrayLinks: [ArrayLink],
+  fileArray: ArrayLink,
 });
 
-const Ninja = mongoose.model("ninja", NinjaSchema);
-module.exports = Ninja;
+const Event = mongoose.model("event", EventSchema);
+module.exports = Event;
