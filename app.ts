@@ -1,14 +1,20 @@
 "use-strict";
 import express, { Application, Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
-const app: Application = express();
+import connectDB from "./config/db";
 
 //Load config
 dotenv.config({ path: "./config/config.env" });
 
+connectDB();
+const app: Application = express();
+
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.send("Hello");
 });
+
+//Routes
+app.use("/events", require("./routes/events"));
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
