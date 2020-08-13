@@ -1,18 +1,17 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from "mongoose";
 
-const KeywordSchema = new Schema({
+const KeywordSchema: Schema = new Schema({
   name: {
     type: String,
     required: [true, "Name field is required"],
   },
   svg: {
-    type: Buffer,
+    type: String,
     required: [true, "A keyword needs an image"],
   },
 });
 
-const CategorySchema = new Schema({
+const TopicSchema: Schema = new Schema({
   name: {
     type: String,
     required: [true, "Name field is required"],
@@ -24,6 +23,6 @@ const CategorySchema = new Schema({
   keywords: [KeywordSchema],
 });
 
-const Category = mongoose.model("category", CategorySchema);
-
-module.exports = Category;
+const Topic = mongoose.model("Topic", TopicSchema);
+export const Keyword = mongoose.model("Keyword", KeywordSchema);
+export default Topic;

@@ -21,9 +21,11 @@
   },
   "homepage": "https://github.com/Kalovelo/a-colourful-api#readme",
   "dependencies": {
+    "@types/multer": "^1.4.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "mongoose": "^5.9.28"
+    "mongoose": "^5.9.28",
+    "multer": "^1.4.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.7",

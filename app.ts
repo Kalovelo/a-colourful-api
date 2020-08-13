@@ -9,6 +9,9 @@ dotenv.config({ path: "./config/config.env" });
 connectDB();
 const app: Application = express();
 
+// Body parser
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.send("Hello");
 });

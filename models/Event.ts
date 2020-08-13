@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const Category = require("./Category");
+import mongoose, { Schema } from "mongoose";
+import Topic from "./Topic";
+import CheatSheet from "./CheatSheet";
 
 const CodeSnippetSchema = new Schema({
   name: {
@@ -34,9 +34,14 @@ const EventSchema = new Schema({
     type: String,
     required: [true, "Name field is required"],
   },
-  category: {
+  eventType: {
     type: String,
-    required: [true, "Category is required"],
+    required: true,
+    enum: ["workshop", "talk"],
+  },
+  topic: {
+    type: Topic,
+    required: [true, "Topic is required"],
   },
   description: {
     type: String,
@@ -64,7 +69,8 @@ const EventSchema = new Schema({
     data: Buffer,
     contentType: String,
   },
-  cheatsheet: [cheatSheetCommandBlockSchema],
+  cheatsheet: [CheatSheet],
+  codesnippets: [CodeSnippetSchema],
   images: [{ data: Buffer, contentType: String }],
   arrayLinks: [ArrayLink],
   fileArray: ArrayLink,

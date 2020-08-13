@@ -1,26 +1,25 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from "mongoose";
 
-CommandSchema = newSchema({
+const CommandSchema: Schema = new Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
 });
 
-CheatSheetCommandBlockSchema = newSchema({
+const CheatSheetCommandBlockSchema: Schema = new Schema({
   name: { type: String, required: true },
   commands: [CommandSchema],
 });
 
-StageSchema = newSchema({
+const StageSchema: Schema = new Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
 });
 
-CheatSheetSchema = newSchema({
+const CheatSheetSchema: Schema = new Schema({
   commandBlocks: [CheatSheetCommandBlockSchema],
   stages: [StageSchema],
 });
 
 const CheatSheet = mongoose.model("cheatsheet", CheatSheetSchema);
 
-module.exports = CheatSheet;
+export default CheatSheet;
