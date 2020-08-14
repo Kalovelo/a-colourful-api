@@ -1,0 +1,92 @@
+{
+  "info": {
+    "_postman_id": "e7c9e014-3ba2-4ff3-b1d1-7df5e0a21757",
+    "name": "A Colourful API - Events",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create a new keyword",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "lalala",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "svg",
+              "type": "file",
+              "src": "~/svg/file.svg"
+            }
+          ],
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/events/topics/keywords",
+          "host": ["{{base_url}}"],
+          "path": ["events", "topics", "keywords"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get all keywords",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/events/topics/keywords",
+          "host": ["{{base_url}}"],
+          "path": ["events", "topics", "keywords"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create a new topic",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"name\":\"amazing\",\n \"description\":\"none\",\n \"keywords\":[\"5f35226446d67a67a12c4f5b\",\"5f35230a2d7f0268fa7ee3ff\"]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/events/topics",
+          "host": ["{{base_url}}"],
+          "path": ["events", "topics"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get all topics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/events/topics/",
+          "host": ["{{base_url}}"],
+          "path": ["events", "topics", ""]
+        }
+      },
+      "response": []
+    }
+  ],
+  "protocolProfileBehavior": {}
+}

@@ -15,3 +15,7 @@ This is the api for https://github.com/Kalovelo/a-colourful-presentation
 
 ## API 
 <a href="./api.md"> Docs </a> 
+
+### Postman
+
+You can import the postman collection (`postman-collection.json`) and use the predefined requests.
