@@ -20,7 +20,10 @@ const TopicSchema: Schema = new Schema({
     type: String,
     required: [true, "Description is required"],
   },
-  keywords: [KeywordSchema],
+  keywords: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Keyword",
+  },
 });
 
 const Topic = mongoose.model("Topic", TopicSchema);

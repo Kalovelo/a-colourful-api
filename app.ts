@@ -17,7 +17,7 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
 });
 
 //Routes
-app.use("/events", require("./routes/events"));
+app.use("/events/topics", require("./routes/topics"));
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -1,10 +1,9 @@
 {
   "name": "a-colourful-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "app.ts",
   "scripts": {
-    "start": "node dist/app.ts",
+    "start": "tsc && node dist/app.ts",
     "dev": "nodemon ./app.ts",
     "build": "tsc -p .",
     "type-check": "tsc --noEmit"
@@ -14,7 +13,7 @@
     "url": "git+https://github.com/Kalovelo/a-colourful-api.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "kalovelo",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Kalovelo/a-colourful-api/issues"
@@ -34,5 +33,6 @@
     "nodemon": "^2.0.4",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
-  }
+  },
+  "description": ""
 }

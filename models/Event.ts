@@ -40,7 +40,8 @@ const EventSchema = new Schema({
     enum: ["workshop", "talk"],
   },
   topic: {
-    type: Topic,
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Topic",
     required: [true, "Topic is required"],
   },
   description: {
@@ -69,7 +70,10 @@ const EventSchema = new Schema({
     data: Buffer,
     contentType: String,
   },
-  cheatsheet: [CheatSheet],
+  cheatsheet: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "CheatSheet",
+  },
   codesnippets: [CodeSnippetSchema],
   images: [{ data: Buffer, contentType: String }],
   arrayLinks: [ArrayLink],
