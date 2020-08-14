@@ -2,6 +2,11 @@
 
 This is the api for https://github.com/Kalovelo/a-colourful-presentation
 
+## Get Started
+
+1. clone
+2. npm install
+3. npm run dev
 
 ## NPM Scripts
 
@@ -13,5 +18,5 @@ This is the api for https://github.com/Kalovelo/a-colourful-presentation
 | npm run type-check |  Run typechecking  |
 |    npm run doc     |    Create Docs     |
 
-## API 
-<a href="./api.md"> Docs </a> 
+## Docs 
+<a href="./api.md"> API </a> 
