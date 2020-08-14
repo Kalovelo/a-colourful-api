@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
-    "start": "tsc && node dist/app.ts",
+    "start": "tsc && node dist/app.js",
     "dev": "nodemon ./app.ts",
     "build": "tsc -p .",
     "type-check": "tsc --noEmit",
