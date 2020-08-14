@@ -2,6 +2,11 @@
 
 This is the api for https://github.com/Kalovelo/a-colourful-presentation
 
+## Get Started
+
+1. clone
+2. npm install
+3. npm run dev
 
 ## NPM Scripts
 
@@ -19,3 +24,5 @@ This is the api for https://github.com/Kalovelo/a-colourful-presentation
 ### Postman
 
 You can import the postman collection (`postman-collection.json`) and use the predefined requests.
+## Docs 
+<a href="./api.md"> API </a> 
