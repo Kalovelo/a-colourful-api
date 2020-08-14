@@ -4,7 +4,7 @@ import { uploadFile, deleteFile } from "../middleware/fileManager";
 const router = express.Router();
 
 /**
- * @api {post} /events/topics Create a new topic
+ * @api {post} /events/topics Create a topic
  * @apiGroup Topic
  * @apiParam (Topic) {String} name Topic's name
  * @apiParam (Topic) {String} description Topic's description
@@ -27,7 +27,7 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 /**
- * @api {get} /events/topics Get a new topic
+ * @api {get} /events/topics Get ALL topics
  * @apiGroup Topic
  *
  */
@@ -42,7 +42,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 /**
- * @api {post} /events/topics/keywords Create a new topic keyword
+ * @api {post} /events/topics/keywords Create topic keyword
  * @apiGroup Keyword
  * @apiParam (Keyword) {String} name Topic's name
  * @apiParam (Keyword) {SVG} svg keyword's svg logo
@@ -62,7 +62,7 @@ router.post("/keywords", uploadFile.single("svg"), async (req: Request, res: Res
 });
 
 /**
- * @api {get} /events/topics/keywords Get all event topic keywords
+ * @api {get} /events/topics/keywords Get ALL topic keywords
  * @apiGroup Keyword
  */
 router.get("/keywords", async (req: Request, res: Response) => {
