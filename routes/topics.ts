@@ -3,8 +3,13 @@ import express, { Request, Response } from "express";
 import { uploadFile, deleteFile } from "../middleware/fileManager";
 const router = express.Router();
 
-// @desc    Insert a new event topic.
-// @route   POST /events/topics
+/**
+ * @api {post} /events/topics Create a new topic
+ * @apiGroup Topic
+ * @apiParam (Topic) {String} name Topic's name
+ * @apiParam (Topic) {String} description Topic's description
+ * @apiParam (Topic) {[String]} keywords keyword ids
+ */
 router.post("/", async (req: Request, res: Response) => {
   try {
     console.log(req.body.keywords);
@@ -21,8 +26,11 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-// @desc    Get all event topics.
-// @route   GET /events/topics
+/**
+ * @api {get} /events/topics Get a new topic
+ * @apiGroup Topic
+ *
+ */
 router.get("/", async (req: Request, res: Response) => {
   try {
     const topics = await Topic.find().lean();
@@ -33,8 +41,12 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
-// @desc    Insert a new event topic keyword.
-// @route   POST /events/topics/keywords
+/**
+ * @api {post} /events/topics/keywords Create a new topic keyword
+ * @apiGroup Keyword
+ * @apiParam (Keyword) {String} name Topic's name
+ * @apiParam (Keyword) {SVG} svg keyword's svg logo
+ */
 router.post("/keywords", uploadFile.single("svg"), async (req: Request, res: Response) => {
   try {
     const keyword = await Keyword.create({
@@ -49,8 +61,10 @@ router.post("/keywords", uploadFile.single("svg"), async (req: Request, res: Res
   }
 });
 
-// @desc    Get all event topic keywords.
-// @route   GET /events/topics/keywords
+/**
+ * @api {get} /events/topics/keywords Get all event topic keywords
+ * @apiGroup Keyword
+ */
 router.get("/keywords", async (req: Request, res: Response) => {
   try {
     const keywords = await Keyword.find().lean();

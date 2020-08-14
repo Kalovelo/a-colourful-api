@@ -6,7 +6,8 @@
     "start": "tsc && node dist/app.ts",
     "dev": "nodemon ./app.ts",
     "build": "tsc -p .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "doc": "apidoc -i ./routes/ -o apidoc-out && apidoc-markdown -p apidoc-out -o api.md && rm -rf apidoc-out"
   },
   "repository": {
     "type": "git",
