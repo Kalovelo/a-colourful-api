@@ -75,4 +75,25 @@ router.get("/keywords", async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @api {put} /events/topics/keywords Update topic keyword
+ * @apiGroup Keyword
+ * @apiParam (Keyword) {String} id Keyword ID
+ * @apiParam (Keyword) {String} name Keyword name
+ * @apiParam (Keyword) {SVG} svg keyword's svg logo
+ */
+router.put("/keywords/:id", uploadFile.single("svg"), async (req: Request, res: Response) => {
+  try {
+    let data: { name: string; svg?: String } = {
+      name: req.body.name,
+    };
+    if (req.file) data.svg = req.file.path;
+    let keyword = await Keyword.findOneAndUpdate({ _id: req.params.id }, data, { new: true });
+    res.send(keyword);
+  } catch (err) {
+    console.log(err);
+    res.status(404).send(err);
+  }
+});
+
 module.exports = router;

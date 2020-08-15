@@ -4,7 +4,7 @@ import fs from "fs";
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const filetype = file.mimetype;
-    filetype.includes("svg") ? cb(null, "./uploads/svg/") : cb(null, "./uploads/images/");
+    filetype.includes("svg") ? cb(null, "./src/uploads/svg/") : cb(null, "./uploads/images/");
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
