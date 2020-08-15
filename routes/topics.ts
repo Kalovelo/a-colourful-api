@@ -12,7 +12,6 @@ const router = express.Router();
  */
 router.post("/", async (req: Request, res: Response) => {
   try {
-    console.log(req.body.keywords);
     const keywords = await Keyword.find().where("_id").in(req.body.keywords);
     const topic = await Topic.create({
       name: req.body.name,
@@ -38,6 +37,36 @@ router.get("/", async (req: Request, res: Response) => {
   } catch (err) {
     console.log(err);
     res.status(404).send(err);
+  }
+});
+
+/**
+ * @api {put} /events/topics/:id Update topic
+ * @apiGroup Topic
+ * @apiParam (Topic) {String} id Topic ID
+ * @apiParam (Topic) {String} name Topic name
+ * @apiParam (Topic) {String} description Topic description
+ * @apiParam (Topic) {[String]} keywords Array of Keyword ids
+ */
+router.put("/:id", async (req: Request, res: Response) => {
+  try {
+    const keywords = await Keyword.find().where("_id").in(req.body.keywords);
+    if (!keywords) return res.status(404).send("No keyword was found.");
+    const topic = await Topic.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        name: req.body.name,
+        description: req.body.description,
+        keywords: keywords,
+      },
+      { new: true }
+    );
+
+    if (!topic) return res.status(404).send("No Topic was found.");
+    res.send(topic);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
   }
 });
 

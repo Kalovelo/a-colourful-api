@@ -6,86 +6,153 @@
   },
   "item": [
     {
-      "name": "Create a new keyword",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
-            {
-              "key": "name",
-              "value": "lalala",
-              "type": "text",
-              "disabled": true
+      "name": "Topics",
+      "item": [
+        {
+          "name": "Create a new topic",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"name\":\"amazing\",\n \"description\":\"none\",\n \"keywords\":[\"5f35226446d67a67a12c4f5b\",\"5f35230a2d7f0268fa7ee3ff\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            {
-              "key": "svg",
-              "type": "file",
-              "src": "~/svg/file.svg"
+            "url": {
+              "raw": "{{base_url}}/events/topics",
+              "host": ["{{base_url}}"],
+              "path": ["events", "topics"]
             }
-          ],
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{base_url}}/events/topics/keywords",
-          "host": ["{{base_url}}"],
-          "path": ["events", "topics", "keywords"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Get all keywords",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/events/topics/keywords",
-          "host": ["{{base_url}}"],
-          "path": ["events", "topics", "keywords"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Create a new topic",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n \"name\":\"amazing\",\n \"description\":\"none\",\n \"keywords\":[\"5f35226446d67a67a12c4f5b\",\"5f35230a2d7f0268fa7ee3ff\"]\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+        {
+          "name": "Get all topics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/events/topics/",
+              "host": ["{{base_url}}"],
+              "path": ["events", "topics", ""]
             }
-          }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{base_url}}/events/topics",
-          "host": ["{{base_url}}"],
-          "path": ["events", "topics"]
+        {
+          "name": "Update Topic",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"name\":\"amazing\",\n \"description\":\"Amazing api\",\n \"keywords\":[\"5f35226446d67a67a12c4f5b\",\"5f340b2813885993f85e97cd\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/events/topics/5f36707e47133149cdb7dbez",
+              "host": ["{{base_url}}"],
+              "path": ["events", "topics", "5f36707e47133149cdb7dbez"]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ],
+      "protocolProfileBehavior": {}
     },
     {
-      "name": "Get all topics",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/events/topics/",
-          "host": ["{{base_url}}"],
-          "path": ["events", "topics", ""]
+      "name": "Keywords",
+      "item": [
+        {
+          "name": "Create a new keyword",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "lalala",
+                  "type": "text"
+                },
+                {
+                  "key": "svg",
+                  "type": "file",
+                  "src": "svg/layer_eswteriko.svg"
+                }
+              ],
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/events/topics/keywords",
+              "host": ["{{base_url}}"],
+              "path": ["events", "topics", "keywords"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all keywords",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/events/topics/keywords",
+              "host": ["{{base_url}}"],
+              "path": ["events", "topics", "keywords"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Keyword",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "id",
+                  "value": "zd",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "pasolakias",
+                  "type": "text"
+                },
+                {
+                  "key": "svg",
+                  "type": "file",
+                  "src": "svg/logo_mouse.svg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/events/topics/keywords/5f340af65733a99376ed7819",
+              "host": ["{{base_url}}"],
+              "path": ["events", "topics", "keywords", "5f340af65733a99376ed7819"]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ],
+      "protocolProfileBehavior": {}
     }
   ],
   "protocolProfileBehavior": {}
