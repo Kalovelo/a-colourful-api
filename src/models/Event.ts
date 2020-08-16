@@ -3,9 +3,9 @@ import mongoose, { Schema } from "mongoose";
 const CodeSnippetSchema = new Schema({
   name: {
     type: String,
-    required: [true, "Na  me field is required"],
+    required: [true, "Name field is required"],
   },
-  commands: { type: String, required: [true, "Na  me field is required"] },
+  commands: { type: String, required: [true, "Name field is required"] },
 });
 
 const ArrayLink = new Schema({

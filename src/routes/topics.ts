@@ -29,7 +29,7 @@ router.post("/", async (req: Request, res: Response) => {
     res.send(topic);
   } catch (err) {
     console.log(err);
-    res.status(400).send(err);
+    res.status(400).send(err.message);
   }
 });
 
@@ -44,7 +44,7 @@ router.get("/", async (req: Request, res: Response) => {
     res.send(topics);
   } catch (err) {
     console.log(err);
-    res.status(404).send(err);
+    res.status(404).send(err.message);
   }
 });
 
@@ -73,13 +73,21 @@ router.put("/:id", async (req: Request, res: Response) => {
         description: req.body.description,
         keywords: keywords,
       },
-      { new: true }
-    ).catch(() => null);
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
-    topic ? res.send(topic) : res.status(404).send("No Topic was found.");
+    if (!topic) {
+      res.status(404);
+      throw new Error("No Topic was found.");
+    }
+    res.send(topic);
   } catch (err) {
-    console.log(err);
-    res.status(500).send(err);
+    console.log(err.name);
+    if (res.statusCode === 200) res.status(400).send(err.message);
+    else res.send(err.message);
   }
 });
 
@@ -93,13 +101,12 @@ router.post("/keywords", uploadFile.single("svg"), async (req: Request, res: Res
   try {
     const keyword = await Keyword.create({
       name: req.body.name,
-      svg: req.file.path,
+      svg: req.file?.path,
     });
     res.send(keyword);
   } catch (err) {
-    deleteFile(req.file.path); //Delete file if error
     console.log(err);
-    res.status(400).send(err);
+    res.status(400).send(err.message);
   }
 });
 
@@ -113,7 +120,7 @@ router.get("/keywords", async (req: Request, res: Response) => {
     res.send(keywords);
   } catch (err) {
     console.log(err);
-    res.status(404).send(err);
+    res.status(404).send(err.message);
   }
 });
 
@@ -126,15 +133,19 @@ router.get("/keywords", async (req: Request, res: Response) => {
  */
 router.put("/keywords/:id", uploadFile.single("svg"), async (req: Request, res: Response) => {
   try {
-    let data: { name: string; svg?: String } = {
+    let data: { name?: string | null; svg?: String } = {
       name: req.body.name,
     };
     if (req.file) data.svg = req.file.path;
-    let keyword = await Keyword.findOneAndUpdate({ _id: req.params.id }, data, { new: true });
+    let keyword = await Keyword.findOneAndUpdate({ _id: req.params.id }, data, {
+      new: true,
+      runValidators: true,
+    });
+    if (!keyword) throw new Error("Keyword ID not found.");
     res.send(keyword);
   } catch (err) {
-    console.log(err);
-    res.status(404).send(err);
+    console.log(err.message);
+    res.status(404).send(err.message);
   }
 });
 

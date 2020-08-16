@@ -4,7 +4,7 @@
   "main": "app.ts",
   "scripts": {
     "start": "tsc && node dist/app.js",
-    "dev": "nodemon ./app.ts",
+    "dev": "nodemon ./src/app.ts",
     "build": "tsc -p .",
     "type-check": "tsc --noEmit",
     "doc": "apidoc -i ./routes/ -o apidoc-out && apidoc-markdown -p apidoc-out -o api.md && rm -rf apidoc-out"
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Kalovelo/a-colourful-api#readme",
   "dependencies": {
+    "@types/http-errors": "^1.8.0",
     "@types/multer": "^1.4.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
