@@ -42,7 +42,7 @@ GET /events/topics/keywords
 [Back to top](#top)
 
 ```
-PUT /events/topics/keywords
+PUT /events/topics/keywords/:id
 ```
 
 ### Parameters - `Keyword`
@@ -81,7 +81,7 @@ GET /events/topics
 [Back to top](#top)
 
 ```
-PUT /events/topics
+PUT /events/topics/:id
 ```
 
 ### Parameters - `Topic`

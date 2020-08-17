@@ -1,4 +1,5 @@
-import Topic, { Keyword } from "../models/Topic";
+import Topic from "../models/Topic";
+import Keyword, { KeywordDocument } from "../models/Keyword";
 import express, { Request, Response } from "express";
 import { uploadFile, deleteFile } from "../middleware/fileManager";
 const router = express.Router();
@@ -137,7 +138,7 @@ router.put("/keywords/:id", uploadFile.single("svg"), async (req: Request, res: 
       name: req.body.name,
     };
     if (req.file) data.svg = req.file.path;
-    let keyword = await Keyword.findOneAndUpdate({ _id: req.params.id }, data, {
+    let keyword = await Keyword.findOneAndUpdate({ _id: req.params.id }, data as KeywordDocument, {
       new: true,
       runValidators: true,
     });
