@@ -29,7 +29,6 @@ router.post("/", async (req: Request, res: Response) => {
 
     res.send(topic);
   } catch (err) {
-    console.log(err);
     res.status(400).send(err.message);
   }
 });
@@ -44,7 +43,6 @@ router.get("/", async (req: Request, res: Response) => {
     const topics = await Topic.find().lean();
     res.send(topics);
   } catch (err) {
-    console.log(err);
     res.status(404).send(err.message);
   }
 });
@@ -106,7 +104,6 @@ router.post("/keywords", uploadFile.single("svg"), async (req: Request, res: Res
     });
     res.send(keyword);
   } catch (err) {
-    console.log(err);
     res.status(400).send(err.message);
   }
 });
@@ -120,7 +117,6 @@ router.get("/keywords", async (req: Request, res: Response) => {
     const keywords = await Keyword.find().lean();
     res.send(keywords);
   } catch (err) {
-    console.log(err);
     res.status(404).send(err.message);
   }
 });

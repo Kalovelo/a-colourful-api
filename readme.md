@@ -15,6 +15,7 @@ This is the api for https://github.com/Kalovelo/a-colourful-presentation
 |    npm run dev     |  Start dev server  |
 |   npm run start    | Build & run server |
 |   npm run build    |   Build project    |
+|    npm run test    |   Run jest tests   |
 | npm run type-check |  Run typechecking  |
 |    npm run doc     |    Create Docs     |
 
