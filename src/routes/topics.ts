@@ -84,7 +84,6 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
     res.send(topic);
   } catch (err) {
-    console.log(err.name);
     if (res.statusCode === 200) res.status(400).send(err.message);
     else res.send(err.message);
   }
@@ -130,9 +129,8 @@ router.get("/keywords", async (req: Request, res: Response) => {
  */
 router.put("/keywords/:id", uploadFile.single("svg"), async (req: Request, res: Response) => {
   try {
-    let data: { name?: string | null; svg?: String } = {
-      name: req.body.name,
-    };
+    let data: { name?: string | null; svg?: String } = {};
+    if (req.body.name) data.name = req.body.name;
     if (req.file) data.svg = req.file.path;
     let keyword = await Keyword.findOneAndUpdate({ _id: req.params.id }, data as KeywordDocument, {
       new: true,

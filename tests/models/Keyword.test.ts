@@ -30,7 +30,7 @@ describe("Keyword Model Test", () => {
     expect(savedKeyword.svg).toBeDefined();
   });
 
-  it("should fail create keyword with unknown field", async () => {
+  it("should fail create keyword unknown field", async () => {
     const savedKeywordwithRandomField = await ((await new Keyword({
       name: "stoe",
       random: "aaaa",
@@ -54,5 +54,21 @@ describe("Keyword Model Test", () => {
     expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
     const keyword = await Keyword.findOne({ name: "name" });
     expect(keyword?._id).toBeUndefined();
+  });
+
+  it("should update keyword name", async () => {
+    const savedKeyword = await ((await new Keyword({
+      name: "stoe",
+      svg: sampleSVG,
+    })) as any).save();
+    const savedKeywordID = savedKeyword._id;
+
+    const updatedKeyword = await Keyword.findOneAndUpdate(
+      { _id: savedKeywordID },
+      { name: "new name" },
+      { new: true, runValidators: true }
+    );
+
+    expect(updatedKeyword!.name).toBe("new name");
   });
 });

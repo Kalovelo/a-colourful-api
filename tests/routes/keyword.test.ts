@@ -68,4 +68,32 @@ describe("Keyword Model Test", () => {
 
     expect(keywords.length).toBe(2);
   });
+
+  it("PUT /events/topics/keywords should return all keywords", async () => {
+    const res = await request
+      .post("/events/topics/keywords")
+      .field("name", "keyword 1")
+      .attach("svg", "tests/files/sample.svg");
+    const keyword = res.body;
+
+    const putRes = await request
+      .put(`/events/topics/keywords/${keyword._id}`)
+      .field("name", "new name");
+
+    expect(putRes.body.name).toBe("new name");
+  });
+
+  it("PUT /events/topics/keywords should not update unknown field", async () => {
+    const res = await request
+      .post("/events/topics/keywords")
+      .field("name", "keyword 1")
+      .attach("svg", "tests/files/sample.svg");
+    const keyword = res.body;
+
+    const putRes = await request
+      .put(`/events/topics/keywords/${keyword._id}`)
+      .field("unknownField", "unknownValue");
+
+    expect(putRes.body.unknownField).toBeUndefined();
+  });
 });
