@@ -47,6 +47,22 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 /**
+ * @api {get} /events/topics/:id Get  topic
+ * @apiGroup Topic
+ * @apiParam (Topic) {String} id Topic ID
+ *
+ */
+router.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const topic = await Topic.findOne({ _id: req.params.id });
+    if (!topic) res.status(404).send("Topic ID not found");
+    else res.send(topic);
+  } catch (err) {
+    res.status(404).send("Topic ID not found");
+  }
+});
+
+/**
  * @api {put} /events/topics/:id Update topic
  * @apiGroup Topic
  * @apiParam (Topic) {String} id Topic ID

@@ -15,8 +15,8 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
 });
 
 //Routes
-app.use("/events/topics", require("./routes/topics"));
-app.use("/events/topics/keywords", require("./routes/keywords"));
+app.use("/topics", require("./routes/topics"));
+app.use("/keywords", require("./routes/keywords"));
 
 //Error Handle
 app.use(function (err: HttpError, req: any, res: any, next: any) {

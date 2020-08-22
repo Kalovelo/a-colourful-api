@@ -35,6 +35,22 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 /**
+ * @api {get} /events/topics/:id Get  Keyword
+ * @apiGroup Keyword
+ * @apiParam (Keyword) {String} id Keyword ID
+ *
+ */
+router.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const keyword = await Keyword.findOne({ _id: req.params.id });
+    if (!keyword) res.status(404).send("keyword ID not found");
+    else res.send(keyword);
+  } catch (err) {
+    res.status(404).send("keyword ID not found");
+  }
+});
+
+/**
  * @api {put} /events/topics/keywords/:id Update topic keyword
  * @apiGroup Keyword
  * @apiParam (Keyword) {String} id Keyword ID
