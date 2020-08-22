@@ -21,8 +21,7 @@ afterAll(async () => await closeDatabase());
 describe("Keyword Model Test", () => {
   it("should create & save keyword successfully", async () => {
     const savedKeyword = await ((await new Keyword({
-      name: "stoe",
-      random: "aaaa",
+      name: "newName",
       svg: sampleSVG,
     })) as any).save();
     expect(savedKeyword._id).toBeDefined();
@@ -32,7 +31,7 @@ describe("Keyword Model Test", () => {
 
   it("should fail create keyword unknown field", async () => {
     const savedKeywordwithRandomField = await ((await new Keyword({
-      name: "stoe",
+      name: "newName",
       random: "aaaa",
       svg: sampleSVG,
     })) as any).save();
@@ -58,7 +57,7 @@ describe("Keyword Model Test", () => {
 
   it("should update keyword name", async () => {
     const savedKeyword = await ((await new Keyword({
-      name: "stoe",
+      name: "newName",
       svg: sampleSVG,
     })) as any).save();
     const savedKeywordID = savedKeyword._id;

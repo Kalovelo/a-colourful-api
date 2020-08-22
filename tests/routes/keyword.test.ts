@@ -20,10 +20,10 @@ afterEach(async () => await clearDatabase());
 afterAll(async () => await closeDatabase());
 
 describe("Keyword Model Test", () => {
-  it("POST /events/topics/keywords - should create & save keyword successfully", async () => {
+  it("POST /keywords - should create & save keyword successfully", async () => {
     const name = "keywordName";
     const res = await request
-      .post("/events/topics/keywords")
+      .post("/keywords")
       .field("name", name)
       .attach("svg", "tests/files/sample.svg");
     const savedKeyword = res.body;
@@ -33,10 +33,10 @@ describe("Keyword Model Test", () => {
     expect(savedKeyword.svg).toBe("src/uploads/svg/sample.svg");
   });
 
-  it("POST /events/topics/keywords - should fail create keyword unknown field", async () => {
+  it("POST /keywords - should fail create keyword unknown field", async () => {
     const name = "keywordName";
     const res = await request
-      .post("/events/topics/keywords")
+      .post("/keywords")
       .field("name", name)
       .field("unknown", "hello")
       .attach("svg", "tests/files/sample.svg");
@@ -45,67 +45,62 @@ describe("Keyword Model Test", () => {
     expect(keyword.name).toBeUndefined;
   });
 
-  it("POST /events/topics/keywords - should fail create keyword without required field", async () => {
-    const res = await request
-      .post("/events/topics/keywords")
-      .attach("svg", "tests/files/sample.svg");
+  it("POST /keywords - should fail create keyword without required field", async () => {
+    const res = await request.post("/keywords").attach("svg", "tests/files/sample.svg");
     expect(res?.status).toBe(400);
   });
 
-  it("GET /events/topics/keywords should return all keywords", async () => {
+  it("GET /keywords should return all keywords", async () => {
     await request
-      .post("/events/topics/keywords")
+      .post("/keywords")
       .field("name", "keyword 1")
       .attach("svg", "tests/files/sample.svg");
     await request
-      .post("/events/topics/keywords")
+      .post("/keywords")
       .field("name", "keyword 2")
       .attach("svg", "tests/files/sample.svg");
 
-    const res = await request.get("/events/topics/keywords");
+    const res = await request.get("/keywords");
 
     const keywords = res.body;
 
     expect(keywords.length).toBe(2);
   });
 
-  it("PUT /events/topics/keywords should return all keywords", async () => {
+  it("PUT /keywords should update field", async () => {
     const res = await request
-      .post("/events/topics/keywords")
+      .post("/keywords")
       .field("name", "keyword 1")
       .attach("svg", "tests/files/sample.svg");
     const keyword = res.body;
 
-    const putRes = await request
-      .put(`/events/topics/keywords/${keyword._id}`)
-      .field("name", "new name");
-
+    const putRes = await request.put(`/keywords/${keyword._id}`).field("name", "new name");
     expect(putRes.body.name).toBe("new name");
   });
 
-  it("PUT /events/topics/keywords should not update unknown field", async () => {
+  it("PUT /keywords should not update unknown field", async () => {
     const res = await request
-      .post("/events/topics/keywords")
+      .post("/keywords")
       .field("name", "keyword 1")
       .attach("svg", "tests/files/sample.svg");
     const keyword = res.body;
 
     const putRes = await request
-      .put(`/events/topics/keywords/${keyword._id}`)
+      .put(`/keywords/${keyword._id}`)
       .field("unknownField", "unknownValue");
 
     expect(putRes.body.unknownField).toBeUndefined();
   });
 
-  it("DELETE /events/topics/keywords should not update unknown field", async () => {
+  it("DELETE /keywords should not update unknown field", async () => {
     const res = await request
-      .post("/events/topics/keywords")
+      .post("/keywords")
       .field("name", "keyword 1")
       .attach("svg", "tests/files/sample.svg");
     const keyword = res.body;
 
     const putRes = await request
-      .put(`/events/topics/keywords/${keyword._id}`)
+      .put(`/keywords/${keyword._id}`)
       .field("unknownField", "unknownValue");
 
     expect(putRes.body.unknownField).toBeUndefined();

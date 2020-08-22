@@ -1,4 +1,10 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
+
+export interface TopicDocument extends Document {
+  name: string;
+  description?: string;
+  keywords: [string];
+}
 
 const TopicSchema: Schema = new Schema({
   name: {
@@ -15,5 +21,5 @@ const TopicSchema: Schema = new Schema({
   },
 });
 
-const Topic = mongoose.model("Topic", TopicSchema);
+const Topic = mongoose.model<TopicDocument>("Topic", TopicSchema);
 export default Topic;
