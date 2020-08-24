@@ -6,11 +6,13 @@
  - [Keyword](#Keyword)
    - [Create topic keyword](#Create-topic-keyword)
    - [Delete topic keyword](#Delete-topic-keyword)
+   - [Get  Keyword](#Get-Keyword)
    - [Get ALL topic keywords](#Get-ALL-topic-keywords)
    - [Update topic keyword](#Update-topic-keyword)
  - [Topic](#Topic)
    - [Create a topic](#Create-a-topic)
    - [Delete topic](#Delete-topic)
+   - [Get  topic](#Get-topic)
    - [Get ALL topics](#Get-ALL-topics)
    - [Update topic](#Update-topic)
 
@@ -37,7 +39,20 @@ POST /events/topics/keywords
 [Back to top](#top)
 
 ```
-DELETE /events/topics/keywords
+DELETE /events/topics/keywords/keywords
+```
+
+### Parameters - `Keyword`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `String` | <p>Keyword ID</p> |
+
+## <a name='Get-Keyword'></a> Get  Keyword
+[Back to top](#top)
+
+```
+GET /events/topics/keywords/:id
 ```
 
 ### Parameters - `Keyword`
@@ -90,6 +105,19 @@ POST /events/topics
 
 ```
 DELETE /events/topics
+```
+
+### Parameters - `Topic`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `String` | <p>Topic ID</p> |
+
+## <a name='Get-topic'></a> Get  topic
+[Back to top](#top)
+
+```
+GET /events/topics/:id
 ```
 
 ### Parameters - `Topic`

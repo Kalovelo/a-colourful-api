@@ -1,5 +1,5 @@
-import Topic from "../models/Topic";
-import Keyword, { KeywordDocument } from "../models/Keyword";
+import Topic, { TopicDocument } from "../models/Topic";
+import Keyword from "../models/Keyword";
 import express, { Request, Response } from "express";
 const router = express.Router();
 
@@ -72,26 +72,27 @@ router.get("/:id", async (req: Request, res: Response) => {
  */
 router.put("/:id", async (req: Request, res: Response) => {
   try {
-    const keywords = await Keyword.find()
-      .where("_id")
-      .in(req.body.keywords)
-      .catch(() => {
-        return null;
-      });
-    if (!keywords) return res.status(404).send("No keyword was found.");
+    let data: {
+      name?: string | null;
+      description?: string | null;
+      keywords?: string[] | string | null;
+    } = {};
 
-    const topic = await Topic.findOneAndUpdate(
-      { _id: req.params.id },
-      {
-        name: req.body.name,
-        description: req.body.description,
-        keywords: keywords,
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    if (req.body.name) data.name = req.body.name;
+    if (req.body.description) data.description = req.body.description;
+    if (req.body.keywords) {
+      const keywords = await Keyword.find()
+        .where("_id")
+        .in(req.body.keywords)
+        .catch(() => {
+          return null;
+        });
+      if (!keywords) return res.status(404).send("No keyword was found.");
+    }
+    const topic = await Topic.findOneAndUpdate({ _id: req.params.id }, data as TopicDocument, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!topic) {
       res.status(404);

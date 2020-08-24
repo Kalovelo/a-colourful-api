@@ -20,7 +20,7 @@ afterEach(async () => await clearDatabase());
 afterAll(async () => await closeDatabase());
 
 describe("Keyword Model Test", () => {
-  it("POST /keywords - should create & save keyword successfully", async () => {
+  it("POST /events/topics/keywords - should create & save keyword successfully", async () => {
     const name = "keywordName";
     const res = await request
       .post("/keywords")
@@ -33,7 +33,7 @@ describe("Keyword Model Test", () => {
     expect(savedKeyword.svg).toBe("src/uploads/svg/sample.svg");
   });
 
-  it("POST /keywords - should fail create keyword unknown field", async () => {
+  it("POST /events/topics/keywords - should fail create keyword unknown field", async () => {
     const name = "keywordName";
     const res = await request
       .post("/keywords")
@@ -45,12 +45,12 @@ describe("Keyword Model Test", () => {
     expect(keyword.name).toBeUndefined;
   });
 
-  it("POST /keywords - should fail create keyword without required field", async () => {
+  it("POST /events/topics/keywords - should fail create keyword without required field", async () => {
     const res = await request.post("/keywords").attach("svg", "tests/files/sample.svg");
     expect(res?.status).toBe(400);
   });
 
-  it("GET /keywords should return all keywords", async () => {
+  it("GET /events/topics/keywords should return all keywords", async () => {
     await request
       .post("/keywords")
       .field("name", "keyword 1")
@@ -67,7 +67,7 @@ describe("Keyword Model Test", () => {
     expect(keywords.length).toBe(2);
   });
 
-  it("PUT /keywords should update field", async () => {
+  it("PUT /events/topics/keywords should update field", async () => {
     const res = await request
       .post("/keywords")
       .field("name", "keyword 1")
@@ -78,7 +78,7 @@ describe("Keyword Model Test", () => {
     expect(putRes.body.name).toBe("new name");
   });
 
-  it("PUT /keywords should not update unknown field", async () => {
+  it("PUT /events/topics/keywords should not update unknown field", async () => {
     const res = await request
       .post("/keywords")
       .field("name", "keyword 1")
@@ -92,7 +92,7 @@ describe("Keyword Model Test", () => {
     expect(putRes.body.unknownField).toBeUndefined();
   });
 
-  it("DELETE /keywords should not update unknown field", async () => {
+  it("DELETE /events/topics/keywords should not update unknown field", async () => {
     const res = await request
       .post("/keywords")
       .field("name", "keyword 1")

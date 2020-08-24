@@ -23,9 +23,9 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/events/topics",
+              "raw": "{{base_url}}/topics",
               "host": ["{{base_url}}"],
-              "path": ["events", "topics"]
+              "path": ["topics"]
             }
           },
           "response": []
@@ -36,9 +36,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/events/topics/",
+              "raw": "{{base_url}}/topics/",
               "host": ["{{base_url}}"],
-              "path": ["events", "topics", ""]
+              "path": ["topics", ""]
             }
           },
           "response": []
@@ -50,7 +50,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n \"name\":\"amazing\",\n \"description\":\"Amazing api\",\n \"keywords\":[\"5f35226446d67a67a12c4f5b\",\"5f340b2813885993f85e97cd\"]\n}",
+              "raw": "{\n \"description\":\"Amazing api\",\n \"keywords\":[\"5f340b2813885993f85e97cd\",\"5f340b2813885993f85e97cd\"]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -58,9 +58,44 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/events/topics/5f36707e47133149cdb7dbez",
+              "raw": "{{base_url}}/topics/5f36707e47133149cdb7dbe5",
               "host": ["{{base_url}}"],
-              "path": ["events", "topics", "5f36707e47133149cdb7dbez"]
+              "path": ["topics", "5f36707e47133149cdb7dbe5"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Topic",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\":\"5f36707e47133149cdb7dbe5\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/topics",
+              "host": ["{{base_url}}"],
+              "path": ["topics"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get topic",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/topics/5f385a442c806583ef5ad",
+              "host": ["{{base_url}}"],
+              "path": ["topics", "5f385a442c806583ef5ad"]
             }
           },
           "response": []
@@ -87,7 +122,7 @@
                 {
                   "key": "svg",
                   "type": "file",
-                  "src": "svg/layer_eswteriko.svg"
+                  "src": "~/sample.svg"
                 }
               ],
               "options": {
@@ -97,9 +132,9 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/events/topics/keywords",
+              "raw": "{{base_url}}/keywords",
               "host": ["{{base_url}}"],
-              "path": ["events", "topics", "keywords"]
+              "path": ["keywords"]
             }
           },
           "response": []
@@ -110,9 +145,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/events/topics/keywords",
+              "raw": "{{base_url}}/keywords",
               "host": ["{{base_url}}"],
-              "path": ["events", "topics", "keywords"]
+              "path": ["keywords"]
             }
           },
           "response": []
@@ -139,14 +174,49 @@
                 {
                   "key": "svg",
                   "type": "file",
-                  "src": "svg/logo_mouse.svg"
+                  "src": "~/sample.svg"
                 }
               ]
             },
             "url": {
-              "raw": "{{base_url}}/events/topics/keywords/5f340af65733a99376ed7819",
+              "raw": "{{base_url}}/keywords/5f340af65733a99376ed7819",
               "host": ["{{base_url}}"],
-              "path": ["events", "topics", "keywords", "5f340af65733a99376ed7819"]
+              "path": ["keywords", "5f340af65733a99376ed7819"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Keyword",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\":\"5f3d39e5d793bdb6c2911dd8\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/keywords",
+              "host": ["{{base_url}}"],
+              "path": ["keywords"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get keyword",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/keywords/5f3ee8d33c329e99abf8fcb1",
+              "host": ["{{base_url}}"],
+              "path": ["keywords", "5f3ee8d33c329e99abf8fcb1"]
             }
           },
           "response": []

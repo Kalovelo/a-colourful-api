@@ -35,7 +35,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 /**
- * @api {get} /events/topics/:id Get  Keyword
+ * @api {get} /events/topics/keywords/:id Get  Keyword
  * @apiGroup Keyword
  * @apiParam (Keyword) {String} id Keyword ID
  *
@@ -75,7 +75,7 @@ router.put("/:id", uploadFile.single("svg"), async (req: Request, res: Response)
 });
 
 /**
- * @api {delete} /events/topics/keywords Delete topic keyword
+ * @api {delete} /events/topics/keywords/keywords Delete topic keyword
  * @apiGroup Keyword
  * @apiParam (Keyword) {String} id Keyword ID
  */
