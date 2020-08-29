@@ -1,10 +1,11 @@
-import { GraphQLObjectType, GraphQLString } from "graphql";
+import { GraphQLObjectType, GraphQLString, GraphQLID } from "graphql";
 
 export const KeywordType = new GraphQLObjectType({
   name: "Keyword",
   fields: () => ({
-    id: { type: GraphQLString },
-    name: { type: GraphQLString },
-    description: { type: GraphQLString },
+    id: { type: GraphQLID! },
+    name: { type: GraphQLString! },
+    description: { type: GraphQLString! },
+    svg: { type: GraphQLString! },
   }),
 });

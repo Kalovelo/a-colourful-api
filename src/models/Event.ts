@@ -5,7 +5,7 @@ const CodeSnippetSchema = new Schema({
     type: String,
     required: [true, "Name field is required"],
   },
-  commands: { type: String, required: [true, "Name field is required"] },
+  commands: { type: String, required: [true, "command is required"] },
 });
 
 const ArrayLink = new Schema({

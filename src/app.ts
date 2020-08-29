@@ -1,7 +1,8 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import { HttpError } from "http-errors";
-
+import { graphqlHTTP } from "express-graphql";
+import RootQuerySchema from "./schema/Root";
 //Load config
 dotenv.config({ path: "config.env" });
 
@@ -10,9 +11,15 @@ const app: Application = express();
 // Body parser
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
-  res.send("Hello");
-});
+
+//GraphQL
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: RootQuerySchema,
+    graphiql: true,
+  })
+);
 
 //Routes
 app.use("/topics", require("./routes/topics"));

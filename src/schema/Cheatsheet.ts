@@ -3,25 +3,25 @@ import { GraphQLObjectType, GraphQLString, GraphQLList } from "graphql";
 const StageType = new GraphQLObjectType({
   name: "Stage",
   fields: () => ({
-    name: { type: GraphQLString },
-    description: { type: GraphQLString },
+    name: { type: GraphQLString! },
+    description: { type: GraphQLString! },
   }),
 });
 
 const CommandType = new GraphQLObjectType({
   name: "Command",
   fields: () => ({
-    name: { type: GraphQLString },
-    description: { type: GraphQLString },
+    name: { type: GraphQLString! },
+    description: { type: GraphQLString! },
   }),
 });
 
 const CheatSheetCommandBlockType = new GraphQLObjectType({
   name: "CheatSheet CommandBlock",
   fields: () => ({
-    name: { type: GraphQLString },
+    name: { type: GraphQLString! },
     commands: {
-      type: new GraphQLList(CommandType),
+      type: new GraphQLList(CommandType)!,
     },
   }),
 });

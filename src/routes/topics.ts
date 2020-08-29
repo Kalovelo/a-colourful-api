@@ -87,6 +87,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         .catch(() => {
           return null;
         });
+      data.keywords = keywords;
       if (!keywords) return res.status(404).send("No keyword was found.");
     }
     const topic = await Topic.findOneAndUpdate({ _id: req.params.id }, data as TopicDocument, {
