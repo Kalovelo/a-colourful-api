@@ -1,5 +1,8 @@
 import { GraphQLObjectType, GraphQLString, GraphQLID } from "graphql";
 import Keyword, { KeywordDocument } from "../models/Keyword";
+import { uploadFileGraphQL, deleteFile } from "../middleware/fileManager";
+
+const { GraphQLUpload } = require("graphql-upload");
 
 export interface Keyword {
   id: string;
@@ -20,12 +23,15 @@ const addKeyword = {
   type: KeywordType,
   args: {
     name: { type: GraphQLString! },
-    svg: { type: GraphQLString! },
+    svg: { type: GraphQLUpload },
   },
   async resolve(parent: Keyword, args: any) {
+    const { filename, mimetype, encoding, createReadStream } = await args.svg;
+    const stream = createReadStream();
+    const path = await uploadFileGraphQL(stream, filename, mimetype);
     const keyword = new Keyword({
       name: args.name,
-      svg: args.svg,
+      svg: path,
     });
     return await keyword.save();
   },
@@ -56,6 +62,7 @@ const deleteKeyword = {
   },
   async resolve(parent: Keyword, args: any) {
     let keyword = await Keyword.findByIdAndDelete(args.id);
+    deleteFile(keyword!.svg);
     if (!keyword) throw new Error("Keyword ID not found.");
     return keyword;
   },

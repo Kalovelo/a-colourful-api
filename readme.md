@@ -2,6 +2,8 @@
 
 This is the api for https://github.com/Kalovelo/a-colourful-presentation
 
+❗ A GraphQL API
+
 ## Get Started
 
 1. clone

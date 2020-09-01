@@ -11,6 +11,7 @@ import Topic from "../models/Topic";
 import { KeywordType } from "./Keyword";
 import Keyword from "../models/Keyword";
 import { keywordMutations } from "./Keyword";
+import { uploadFileGraphQL } from "../middleware/fileManager";
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",

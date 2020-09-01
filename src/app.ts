@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import { HttpError } from "http-errors";
 import { graphqlHTTP } from "express-graphql";
 import RootQuerySchema from "./schema/Root";
+
+const { graphqlUploadExpress } = require("graphql-upload");
+
 //Load config
 dotenv.config({ path: "config.env" });
 
@@ -15,15 +18,12 @@ app.use(express.json());
 //GraphQL
 app.use(
   "/graphql",
+  graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }),
   graphqlHTTP({
     schema: RootQuerySchema,
     graphiql: true,
   })
 );
-
-//Routes
-app.use("/topics", require("./routes/topics"));
-app.use("/keywords", require("./routes/keywords"));
 
 //Error Handle
 app.use(function (err: HttpError, req: any, res: any, next: any) {
