@@ -1,13 +1,18 @@
 import multer from "multer";
 import fs from "fs";
 import createHttpError from "http-errors";
-import { Stream } from "stream";
+import GraphqlHTTPError from "../utils/GraphqlHTTPError";
 
 const SUPPORTED_MIMETYPES = ["image/svg+xml", "image/png", "image/jpeg", "image/web"];
 
 const _getUploadDir = (mimetype: string) => {
+  if (!SUPPORTED_MIMETYPES.includes(mimetype)) {
+    const error = new GraphqlHTTPError("Filetype is not supported.", 415);
+    throw error;
+  }
   return mimetype === "image/svg+xml" ? "./src/uploads/svg" : "./src/uploads/images";
 };
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, _getUploadDir(file.mimetype));
@@ -31,7 +36,6 @@ export const uploadFile = multer({
 });
 
 export const uploadFileGraphQL = (stream: any, filename: String, mimetype: string) => {
-  //todo: throw errors
   let uploadDir = _getUploadDir(mimetype);
   const path = `${uploadDir}/${filename}`;
   return new Promise((resolve, reject) =>
