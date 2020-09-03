@@ -31,9 +31,10 @@ const addKeyword = {
   },
 };
 
-const updateKeyword = {
+export const updateKeyword = {
   type: KeywordType,
   args: {
+    id: { type: GraphQLString },
     name: { type: GraphQLString },
     svg: { type: GraphQLString },
   },
@@ -46,6 +47,7 @@ const updateKeyword = {
       runValidators: true,
     });
     if (!keyword) throw new Error("Keyword ID not found.");
+    return keyword;
   },
 };
 

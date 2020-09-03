@@ -2,8 +2,7 @@ import { contentType } from "mime-types";
 import { extname } from "path";
 import supertest, { SuperTest } from "supertest";
 
-const app = require("../src/app");
-export const graphqlRequest = (
+export const graphqlRequestUpload = (
   query: string,
   app: SuperTest<supertest.Test>,
   variables: { [x: string]: any } = {}

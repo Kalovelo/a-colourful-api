@@ -1,7 +1,10 @@
 import supertest from "supertest";
 import { closeDatabase, connectDatabase, clearDatabase } from "../dbhandler";
-import { graphqlRequest } from "../graphqlRequest";
+import { graphqlRequestUpload } from "../graphqlRequestUpload";
 import { deleteFile } from "../../src/middleware/fileManager";
+import Keyword from "../../src/models/Keyword";
+import { graphql } from "graphql";
+import RootQuerySchema from "../../src/schema/Root";
 
 const app = require("../../src/app");
 const request = supertest(app);
@@ -20,26 +23,70 @@ afterEach(async () => await clearDatabase());
  */
 afterAll(async () => await closeDatabase());
 
+const createSampleKeyword = async () => {
+  const query = /* GraphQL */ `
+    mutation($svg: Upload!) {
+      addKeyword(name: "testQUeryKeyword", svg: $svg) {
+        id
+        name
+        svg
+      }
+    }
+  `;
+
+  return await graphqlRequestUpload(query, request, {
+    svg: "tests/files/sample.svg",
+  });
+};
+
 describe("Keyword Model Test", () => {
   it("CREATE - should create & save keyword successfully", async () => {
+    const res = await createSampleKeyword();
+    const filePath = "src/uploads/svg/sample.svg";
+    const savedKeyword = res.body.data.addKeyword;
+    expect(savedKeyword.id).toBeDefined();
+    expect(savedKeyword.name).toBe("testQUeryKeyword");
+    expect(savedKeyword.svg).toBe(filePath);
+    deleteFile(filePath);
+  });
+
+  it("UPDATE - should create & save keyword successfully", async () => {
+    const res = await createSampleKeyword();
+    const savedKeywordID = res.body.data.addKeyword.id;
     const query = /* GraphQL */ `
-      mutation($svg: Upload!) {
-        addKeyword(name: "testQUeryKeyword", svg: $svg) {
-          id
+      mutation($keywordID: String) {
+        updateKeyword(id: $keywordID, name: "amazing") {
           name
+          id
           svg
         }
       }
     `;
 
-    const res = await graphqlRequest(query, request, {
-      svg: "tests/files/sample.svg",
+    const updateRes = await graphql(RootQuerySchema, query, null, null, {
+      keywordID: savedKeywordID,
     });
-    const savedKeyword = res.body.data.addKeyword;
-    const filePath = "src/uploads/svg/sample.svg";
-    expect(savedKeyword.id).toBeDefined();
-    expect(savedKeyword.name).toBe("testQUeryKeyword");
-    expect(savedKeyword.svg).toBe(filePath);
-    deleteFile(filePath);
+    expect(updateRes.data!.updateKeyword.name).toBe("amazing");
+  });
+
+  it("DELETE - should delete keyword successfully", async () => {
+    const res = await createSampleKeyword();
+    const savedKeywordID = res.body.data.addKeyword.id;
+    const query = /* GraphQL */ `
+      mutation($keywordID: ID) {
+        deleteKeyword(id: $keywordID) {
+          name
+          id
+          svg
+        }
+      }
+    `;
+
+    await graphql(RootQuerySchema, query, null, null, {
+      keywordID: savedKeywordID,
+    });
+
+    const keyword = Keyword.findById(savedKeywordID);
+    expect(keyword).toBeUndefined;
   });
 });
