@@ -36,10 +36,4 @@ app.use(
   })
 );
 
-//Error Handle
-app.use(function (err: HttpError, req: any, res: any, next: any) {
-  console.log(err.name);
-  res.status(err.status).send(err.message);
-});
-
 module.exports = app;

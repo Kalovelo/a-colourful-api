@@ -1,7 +1,8 @@
 import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID } from "graphql";
 import { KeywordType } from "./Keyword";
 import Keyword from "../models/Keyword";
-import Topic from "../models/Topic";
+import Topic, { TopicDocument } from "../models/Topic";
+import GraphqlHTTPError from "../utils/GraphqlHTTPError";
 
 export const TopicType = new GraphQLObjectType({
   name: "Topic",
@@ -21,3 +22,89 @@ export const TopicType = new GraphQLObjectType({
     },
   }),
 });
+
+const addTopic = {
+  type: TopicType,
+  args: {
+    name: { type: GraphQLString! },
+    description: { type: GraphQLString! },
+    keywords: { type: GraphQLList(KeywordType)! },
+  },
+  async resolve(parent: TopicDocument, args: any) {
+    try {
+      const keywords = await Keyword.find()
+        .where("_id")
+        .in(args.keywords)
+        .catch(() => {
+          return null;
+        });
+      if (!keywords) throw new GraphqlHTTPError("No keyword was found.", 400);
+
+      const topic = await Topic.create({
+        name: args.name,
+        description: args.description,
+        keywords: keywords,
+      });
+
+      return topic;
+    } catch (err) {
+      throw new GraphqlHTTPError(err.message, 400);
+    }
+  },
+};
+
+const updateTopic = {
+  type: KeywordType,
+  args: {
+    name: { type: GraphQLString },
+    description: { type: GraphQLString },
+    keywords: { type: GraphQLList(KeywordType) },
+  },
+  async resolve(parent: TopicDocument, args: any) {
+    try {
+      let data: {
+        name?: string;
+        description?: String;
+        keywords?: string[] | string | null;
+      } = {};
+      if (args.name) data.name = args.name;
+      if (args.description) data.description = args.description;
+      if (args.keywords) {
+        const keywords = await Keyword.find()
+          .where("_id")
+          .in(args.keywords)
+          .catch(() => {
+            return null;
+          });
+        data.keywords = keywords;
+        if (!keywords) throw new GraphqlHTTPError("Keywords not found", 404);
+      }
+      const topic = await Topic.findOneAndUpdate({ _id: args.id }, data as TopicDocument, {
+        new: true,
+        runValidators: true,
+      });
+      if (!topic) throw new GraphqlHTTPError("Topic ID not found.", 404);
+      return topic;
+    } catch (err) {
+      throw new GraphqlHTTPError(err.message, 400);
+    }
+  },
+};
+
+const deleteTopic = {
+  type: TopicType,
+  args: {
+    id: { type: GraphQLID },
+  },
+  async resolve(parent: TopicDocument, args: any) {
+    try {
+      let topic = await Topic.findByIdAndDelete(args.id);
+      if (!topic) throw new GraphqlHTTPError("Topic ID not found.", 400);
+      return topic;
+    } catch (err) {
+      throw new GraphqlHTTPError(err.message, 400);
+    }
+  },
+};
+
+export const TopicMutations = { addTopic, updateTopic, deleteTopic };

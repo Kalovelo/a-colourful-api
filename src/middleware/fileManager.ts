@@ -10,7 +10,7 @@ const _getUploadDir = (mimetype: string) => {
     const error = new GraphqlHTTPError("Filetype is not supported.", 415);
     throw error;
   }
-  return mimetype === "image/svg+xml" ? "./src/uploads/svg" : "./src/uploads/images";
+  return mimetype === "image/svg+xml" ? "src/uploads/svg" : "src/uploads/images";
 };
 
 const storage = multer.diskStorage({

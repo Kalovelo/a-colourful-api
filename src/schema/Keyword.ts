@@ -4,12 +4,6 @@ import { uploadFileGraphQL, deleteFile } from "../middleware/fileManager";
 
 const { GraphQLUpload } = require("graphql-upload");
 
-export interface Keyword {
-  id: string;
-  name: string;
-  svg: string;
-}
-
 export const KeywordType = new GraphQLObjectType({
   name: "Keyword",
   fields: () => ({
@@ -23,17 +17,17 @@ const addKeyword = {
   type: KeywordType,
   args: {
     name: { type: GraphQLString! },
-    svg: { type: GraphQLUpload },
+    svg: { type: GraphQLUpload! },
   },
-  async resolve(parent: Keyword, args: any) {
+  async resolve(parent: KeywordDocument, args: any) {
     const { filename, mimetype, encoding, createReadStream } = await args.svg;
     const stream = createReadStream();
-    const path = await uploadFileGraphQL(stream, filename, mimetype);
-    const keyword = new Keyword({
+    const path: string = (await uploadFileGraphQL(stream, filename, mimetype)) as string;
+    const keyword = await Keyword.create({
       name: args.name,
       svg: path,
     });
-    return await keyword.save();
+    return keyword;
   },
 };
 
@@ -43,7 +37,7 @@ const updateKeyword = {
     name: { type: GraphQLString },
     svg: { type: GraphQLString },
   },
-  async resolve(parent: Keyword, args: any) {
+  async resolve(parent: KeywordDocument, args: any) {
     let data: { name?: string | null; svg?: String } = {};
     if (args.name) data.name = args.name;
     if (args.svg) data.svg = args.svg;
@@ -60,7 +54,7 @@ const deleteKeyword = {
   args: {
     id: { type: GraphQLID },
   },
-  async resolve(parent: Keyword, args: any) {
+  async resolve(parent: KeywordDocument, args: any) {
     let keyword = await Keyword.findByIdAndDelete(args.id);
     deleteFile(keyword!.svg);
     if (!keyword) throw new Error("Keyword ID not found.");

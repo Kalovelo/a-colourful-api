@@ -1,17 +1,9 @@
-import {
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLID,
-  GraphQLSchema,
-  GraphQLString,
-  ObjectTypeDefinitionNode,
-} from "graphql";
+import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLSchema } from "graphql";
 import { TopicType } from "./Topic";
 import Topic from "../models/Topic";
 import { KeywordType } from "./Keyword";
 import Keyword from "../models/Keyword";
 import { keywordMutations } from "./Keyword";
-import { uploadFileGraphQL } from "../middleware/fileManager";
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
