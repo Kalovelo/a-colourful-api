@@ -5,7 +5,7 @@ import { deleteFile } from "../../src/middleware/fileManager";
 import Keyword from "../../src/models/Keyword";
 import { graphql } from "graphql";
 import RootQuerySchema from "../../src/schema/Root";
-
+import { generateKeyword } from "./generateData";
 const app = require("../../src/app");
 const request = supertest(app);
 /**
@@ -23,35 +23,89 @@ afterEach(async () => await clearDatabase());
  */
 afterAll(async () => await closeDatabase());
 
-const createSampleKeyword = async () => {
-  const query = /* GraphQL */ `
-    mutation($svg: Upload!) {
-      addKeyword(name: "testQUeryKeyword", svg: $svg) {
-        id
-        name
-        svg
-      }
-    }
-  `;
-
-  return await graphqlRequestUpload(query, request, {
-    svg: "tests/files/sample.svg",
-  });
-};
-
 describe("Keyword Model Test", () => {
   it("CREATE - should create & save keyword successfully", async () => {
-    const res = await createSampleKeyword();
+    const res = await generateKeyword(request);
     const filePath = "src/uploads/svg/sample.svg";
     const savedKeyword = res.body.data.addKeyword;
     expect(savedKeyword.id).toBeDefined();
-    expect(savedKeyword.name).toBe("testQUeryKeyword");
+    expect(savedKeyword.name).toBe("testKeyword");
     expect(savedKeyword.svg).toBe(filePath);
     deleteFile(filePath);
   });
 
+  it("CREATE - should fail create keyword unknown field", async () => {
+    const query = /* GraphQL */ `
+      mutation($svg: Upload!) {
+        addKeyword(name: "testKeyword", svg: $svg, random: "random") {
+          id
+          name
+          svg
+        }
+      }
+    `;
+
+    const res = await graphqlRequestUpload(query, request, {
+      svg: "tests/files/sample.svg",
+    });
+    const keyword = res.body;
+    expect(res.status).toBe(400);
+    expect(keyword.name).toBeUndefined();
+  });
+
+  it("CREATE - should fail create keyword without required field", async () => {
+    const query = /* GraphQL */ `
+      mutation {
+        addKeyword(name: "testKeyword") {
+          id
+        }
+      }
+    `;
+    const res = await graphqlRequestUpload(query, request);
+    const keyword = res.body;
+    expect(res.status).toBe(400);
+    expect(keyword.name).toBeUndefined();
+  });
+
+  it("GET - should all the keywords", async () => {
+    await generateKeyword(request);
+    await generateKeyword(request);
+
+    const query = /* GraphQL */ `
+      {
+        keywords {
+          id
+          name
+          svg
+        }
+      }
+    `;
+
+    const res = await graphql(RootQuerySchema, query);
+    expect(res.data!.keywords.length).toBe(2);
+  });
+
+  it("GET - should get keyword with specific ID", async () => {
+    const res = await generateKeyword(request);
+    const savedKeywordID = res.body.data.addKeyword.id;
+    const query = /* GraphQL */ `
+      query($keywordID: ID) {
+        keyword(id: $keywordID) {
+          id
+          name
+          svg
+        }
+      }
+    `;
+
+    const getRes = await graphql(RootQuerySchema, query, null, null, {
+      keywordID: savedKeywordID,
+    });
+    expect(getRes.data!.keyword.id).toBe(savedKeywordID);
+  });
+
   it("UPDATE - should create & save keyword successfully", async () => {
-    const res = await createSampleKeyword();
+    const res = await generateKeyword(request);
     const savedKeywordID = res.body.data.addKeyword.id;
     const query = /* GraphQL */ `
       mutation($keywordID: String) {
@@ -70,7 +124,7 @@ describe("Keyword Model Test", () => {
   });
 
   it("DELETE - should delete keyword successfully", async () => {
-    const res = await createSampleKeyword();
+    const res = await generateKeyword(request);
     const savedKeywordID = res.body.data.addKeyword.id;
     const query = /* GraphQL */ `
       mutation($keywordID: ID) {

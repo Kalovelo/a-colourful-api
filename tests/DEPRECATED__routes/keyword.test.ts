@@ -91,18 +91,4 @@ describe("Keyword Model Test", () => {
 
     expect(putRes.body.unknownField).toBeUndefined();
   });
-
-  it("DELETE /events/topics/keywords should not update unknown field", async () => {
-    const res = await request
-      .post("/keywords")
-      .field("name", "keyword 1")
-      .attach("svg", "tests/files/sample.svg");
-    const keyword = res.body;
-
-    const putRes = await request
-      .put(`/keywords/${keyword._id}`)
-      .field("unknownField", "unknownValue");
-
-    expect(putRes.body.unknownField).toBeUndefined();
-  });
 });

@@ -1,6 +1,5 @@
-import express, { Application, Request, Response, NextFunction } from "express";
+import express, { Application } from "express";
 import dotenv from "dotenv";
-import { HttpError } from "http-errors";
 import { graphqlHTTP } from "express-graphql";
 import RootQuerySchema from "./schema/Root";
 import { GraphQLError } from "graphql";
@@ -24,13 +23,13 @@ app.use(
     schema: RootQuerySchema,
     graphiql: true,
     customFormatErrorFn: (error: GraphQLError) => {
+      if (error.message.includes("Cast to ObjectId failed")) error.message = "Invalid ID.";
       const formattedError: {
         message: string;
-        code?: string[] | string;
-      } = { message: error.message };
+        status?: string[] | number;
+      } = { message: error.message, status: 400 };
 
-      if (error.extensions?.code) formattedError.code = error.extensions.code;
-
+      if (error.extensions?.code) formattedError.status = error.extensions.code;
       return formattedError;
     },
   })

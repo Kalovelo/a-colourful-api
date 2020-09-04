@@ -1,5 +1,12 @@
-import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLSchema } from "graphql";
-import { TopicType } from "./Topic";
+import {
+  GraphQLObjectType,
+  GraphQLList,
+  GraphQLID,
+  GraphQLSchema,
+  GraphQLInputFieldMap,
+  GraphQLInputType,
+} from "graphql";
+import { TopicType, TopicMutations } from "./Topic";
 import Topic from "../models/Topic";
 import { KeywordType } from "./Keyword";
 import Keyword from "../models/Keyword";
@@ -38,10 +45,11 @@ const RootQuery = new GraphQLObjectType({
     },
   },
 });
+const mutations = { ...keywordMutations, ...TopicMutations } as any;
 
 const RootMutation = new GraphQLObjectType({
-  name: "RootMutation",
-  fields: { ...keywordMutations },
+  name: "Mutation",
+  fields: { ...mutations },
 });
 
 const RootQuerySchema = new GraphQLSchema({

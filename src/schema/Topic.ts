@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID } from "graphql";
+import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from "graphql";
 import { KeywordType } from "./Keyword";
 import Keyword from "../models/Keyword";
 import Topic, { TopicDocument } from "../models/Topic";
@@ -27,8 +27,8 @@ const addTopic = {
   type: TopicType,
   args: {
     name: { type: GraphQLString! },
-    description: { type: GraphQLString! },
-    keywords: { type: GraphQLList(KeywordType)! },
+    description: { type: new GraphQLNonNull(GraphQLString) },
+    keywords: { type: new GraphQLNonNull(GraphQLList(GraphQLID)) },
   },
   async resolve(parent: TopicDocument, args: any) {
     try {
@@ -54,11 +54,12 @@ const addTopic = {
 };
 
 const updateTopic = {
-  type: KeywordType,
+  type: TopicType,
   args: {
+    id: { type: new GraphQLNonNull(GraphQLID) },
     name: { type: GraphQLString },
     description: { type: GraphQLString },
-    keywords: { type: GraphQLList(KeywordType) },
+    keywords: { type: GraphQLList(GraphQLID) },
   },
   async resolve(parent: TopicDocument, args: any) {
     try {
