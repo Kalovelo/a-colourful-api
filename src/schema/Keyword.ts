@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLID } from "graphql";
+import { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLNonNull } from "graphql";
 import Keyword, { KeywordDocument } from "../models/Keyword";
 import { uploadFileGraphQL, deleteFile } from "../middleware/fileManager";
 
@@ -16,8 +16,8 @@ export const KeywordType = new GraphQLObjectType({
 const addKeyword = {
   type: KeywordType,
   args: {
-    name: { type: GraphQLString! },
-    svg: { type: GraphQLUpload! },
+    name: { type: new GraphQLNonNull(GraphQLString)! },
+    svg: { type: new GraphQLNonNull(GraphQLUpload)! },
   },
   async resolve(parent: KeywordDocument, args: any) {
     const { filename, mimetype, encoding, createReadStream } = await args.svg;
@@ -54,7 +54,7 @@ export const updateKeyword = {
 const deleteKeyword = {
   type: KeywordType,
   args: {
-    id: { type: GraphQLID },
+    id: { type: new GraphQLNonNull(GraphQLID) },
   },
   async resolve(parent: KeywordDocument, args: any) {
     let keyword = await Keyword.findByIdAndDelete(args.id);
