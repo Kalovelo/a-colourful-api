@@ -11,6 +11,9 @@ import { TopicType } from "./Topic";
 import { CheatSheetType as CheatSheetSchema, CheatSheetInput } from "./Cheatsheet";
 import Event, { EventDocument } from "../models/Event";
 import { uploadFileGraphQL } from "../middleware/fileManager";
+import Topic from "../models/Topic";
+
+const { GraphQLUpload } = require("graphql-upload");
 
 const CodeSnippetSchema = new GraphQLObjectType({
   name: "CodeSnippet",
@@ -75,8 +78,8 @@ const ArrayLinkInput = new GraphQLInputObjectType({
 const eventTypeEnum = new GraphQLEnumType({
   name: "eventTypeEnum",
   values: {
-    TALK: { value: "talk" },
-    WORKSHOP: { value: "workshop" },
+    TALK: { value: "Talk" },
+    WORKSHOP: { value: "Workshop" },
   },
 });
 
@@ -94,6 +97,7 @@ export const EventType = new GraphQLObjectType({
     id: { type: GraphQLID! },
     name: { type: GraphQLString! },
     description: { type: GraphQLString! },
+    eventType: { type: eventTypeEnum },
     summary: { type: GraphQLString! },
     date: { type: GraphQLString! },
     place: { type: GraphQLString! },
@@ -105,7 +109,13 @@ export const EventType = new GraphQLObjectType({
     level: {
       type: eventLevelEnum!,
     },
-    topic: { type: TopicType! },
+    topic: {
+      type: TopicType!,
+      async resolve(parent, args) {
+        const topic = await Topic.findById(parent.topic);
+        return topic;
+      },
+    },
     cheatsheet: { type: CheatSheetSchema },
     codesnippets: {
       type: new GraphQLList(CodeSnippetSchema),
@@ -127,34 +137,35 @@ const addEvent = {
   args: {
     name: { type: new GraphQLNonNull(GraphQLString)! },
     eventType: { type: new GraphQLNonNull(eventTypeEnum)! },
-    topic: { type: new GraphQLNonNull(GraphQLString)! },
+    topic: { type: new GraphQLNonNull(GraphQLID)! },
     description: { type: GraphQLString! },
     summary: { type: GraphQLString! },
     date: { type: GraphQLString! },
     level: { type: new GraphQLNonNull(GraphQLString)! },
     place: { type: new GraphQLNonNull(GraphQLString)! },
-    poster: { type: GraphQLString! },
-    primaryImage: { type: GraphQLString! },
-    images: { type: new GraphQLList(GraphQLString)! },
+    poster: { type: GraphQLUpload! },
+    primaryImage: { type: GraphQLUpload! },
+    images: { type: new GraphQLList(GraphQLUpload)! },
     cheatsheet: { type: CheatSheetInput },
     codeSnippets: { type: new GraphQLList(CodeSnippetInput)! },
     arrayLink: { type: new GraphQLList(ArrayLinkInput)! },
     fileArray: { type: ArrayLinkInput! },
   },
+
   async resolve(parent: EventDocument, args: any) {
     let { images, poster, primaryImage, ...rest } = args;
-
     images = await args.images.map(async (image: any) => uploadImage(image));
     poster = await uploadImage(args.poster);
     primaryImage = await uploadImage(args.primaryImage);
 
-    const keyword = await Event.create({
+    const event = await Event.create({
       images,
       poster,
       primaryImage,
       ...rest,
     });
-    return keyword;
+
+    return event;
   },
 };
 

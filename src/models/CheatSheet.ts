@@ -15,7 +15,7 @@ const StageSchema: Schema = new Schema({
   description: { type: String, required: true },
 });
 
-const CheatSheetSchema: Schema = new Schema({
+export const CheatSheetSchema: Schema = new Schema({
   commandBlocks: [CheatSheetCommandBlockSchema],
   stages: [StageSchema],
 });

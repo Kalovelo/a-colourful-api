@@ -1,4 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { CheatSheetSchema } from "./CheatSheet";
+
 export interface EventDocument extends Document {
   name: string;
   eventType: string;
@@ -57,7 +59,7 @@ const EventSchema = new Schema({
   eventType: {
     type: String,
     required: true,
-    enum: ["workshop", "talk"],
+    enum: ["Workshop", "Talk"],
   },
   topic: {
     type: [mongoose.Schema.Types.ObjectId],
@@ -91,8 +93,7 @@ const EventSchema = new Schema({
     contentType: String,
   },
   cheatsheet: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: "CheatSheet",
+    type: [CheatSheetSchema],
   },
   codesnippets: [CodeSnippetSchema],
   images: [{ data: Buffer, contentType: String }],
