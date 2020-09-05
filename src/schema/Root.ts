@@ -10,7 +10,9 @@ import { TopicType, TopicMutations } from "./Topic";
 import Topic from "../models/Topic";
 import { KeywordType } from "./Keyword";
 import Keyword from "../models/Keyword";
+import Event from "../models/Event";
 import { keywordMutations } from "./Keyword";
+import { EventType, eventMutations } from "./Event";
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
@@ -31,7 +33,6 @@ const RootQuery = new GraphQLObjectType({
     },
     keywords: {
       type: new GraphQLList(KeywordType),
-      args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         return Keyword.find();
       },
@@ -43,9 +44,23 @@ const RootQuery = new GraphQLObjectType({
         return await Keyword.findById(args.id);
       },
     },
+    event: {
+      type: EventType,
+      args: { id: { type: GraphQLID } },
+      async resolve(parent, args) {
+        return await Event.findById(args.id);
+      },
+    },
+    events: {
+      type: EventType,
+      async resolve(parent, args) {
+        return await Event.find();
+      },
+    },
   },
 });
-const mutations = { ...keywordMutations, ...TopicMutations } as any;
+
+const mutations = { ...keywordMutations, ...TopicMutations, ...eventMutations } as any;
 
 const RootMutation = new GraphQLObjectType({
   name: "Mutation",

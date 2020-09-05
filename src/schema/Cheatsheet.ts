@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLList } from "graphql";
+import { GraphQLString, GraphQLList, GraphQLInputObjectType, GraphQLObjectType } from "graphql";
 
 const StageType = new GraphQLObjectType({
   name: "Stage",
@@ -17,7 +17,7 @@ const CommandType = new GraphQLObjectType({
 });
 
 const CheatSheetCommandBlockType = new GraphQLObjectType({
-  name: "CheatSheet CommandBlock",
+  name: "CheatSheetCommandBlock",
   fields: () => ({
     name: { type: GraphQLString! },
     commands: {
@@ -35,6 +35,45 @@ export const CheatSheetType = new GraphQLObjectType({
     },
     stages: {
       type: new GraphQLList(StageType),
+    },
+  }),
+});
+
+const StageInput = new GraphQLInputObjectType({
+  name: "StageInput",
+  fields: () => ({
+    name: { type: GraphQLString! },
+    description: { type: GraphQLString! },
+  }),
+});
+
+const CommandInput = new GraphQLInputObjectType({
+  name: "CommandInput",
+  fields: () => ({
+    name: { type: GraphQLString! },
+    description: { type: GraphQLString! },
+  }),
+});
+
+const CheatSheetCommandBlockInput = new GraphQLInputObjectType({
+  name: "CheatSheetCommandBlockInput",
+  fields: () => ({
+    name: { type: GraphQLString! },
+    commands: {
+      type: new GraphQLList(CommandInput)!,
+    },
+  }),
+});
+
+export const CheatSheetInput = new GraphQLInputObjectType({
+  name: "CheatSheetInput",
+  fields: () => ({
+    id: { type: GraphQLString },
+    commandBlocks: {
+      type: new GraphQLList(CheatSheetCommandBlockInput),
+    },
+    stages: {
+      type: new GraphQLList(StageInput),
     },
   }),
 });

@@ -1,4 +1,26 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
+export interface EventDocument extends Document {
+  name: string;
+  eventType: string;
+  topic: string;
+  description: string;
+  summary: string;
+  date: Date;
+  level: string;
+  place: string;
+  poster: string;
+  primaryImage: string;
+  images: [string];
+  cheatsheet: string;
+  codeSnippets: [
+    {
+      name: string;
+      commands: [string];
+    }
+  ];
+  arrayLink: [{ name: string; links: [{ name: string; link: string }] }];
+  fileArray: { name: string; links: [{ name: string; link: string }] };
+}
 
 const CodeSnippetSchema = new Schema({
   name: {
@@ -78,5 +100,5 @@ const EventSchema = new Schema({
   fileArray: ArrayLink,
 });
 
-const Event = mongoose.model("event", EventSchema);
-module.exports = Event;
+const Event = mongoose.model<EventDocument>("event", EventSchema);
+export default Event;
