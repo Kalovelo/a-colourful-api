@@ -68,9 +68,11 @@ const EventSchema = new Schema({
   },
   description: {
     type: String,
+    required: [true, "Description is required"],
   },
   summary: {
     type: String,
+    required: [true, "Summary is required"],
   },
   date: {
     type: Date,
@@ -85,21 +87,19 @@ const EventSchema = new Schema({
     required: [true, "Place is required"],
   },
   poster: {
-    data: Buffer,
-    contentType: String,
+    type: String,
   },
   primaryImage: {
-    data: Buffer,
-    contentType: String,
+    type: String,
   },
   cheatsheet: {
     type: [CheatSheetSchema],
   },
   codesnippets: [CodeSnippetSchema],
-  images: [{ data: Buffer, contentType: String }],
+  images: [String],
   arrayLinks: [ArrayLink],
   fileArray: ArrayLink,
 });
 
-const Event = mongoose.model<EventDocument>("event", EventSchema);
+const Event = mongoose.model<EventDocument>("Event", EventSchema);
 export default Event;

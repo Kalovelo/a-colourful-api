@@ -1,18 +1,12 @@
-import {
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLID,
-  GraphQLSchema,
-  GraphQLInputFieldMap,
-  GraphQLInputType,
-} from "graphql";
+import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLSchema } from "graphql";
 import { TopicType, TopicMutations } from "./Topic";
 import Topic from "../models/Topic";
 import { KeywordType } from "./Keyword";
 import Keyword from "../models/Keyword";
 import Event from "../models/Event";
 import { keywordMutations } from "./Keyword";
-import { EventType, eventMutations } from "./Event";
+import { EventType } from "./Event/Event";
+import { mutations as eventMutations } from "./Event/Mutations";
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
@@ -52,9 +46,9 @@ const RootQuery = new GraphQLObjectType({
       },
     },
     events: {
-      type: EventType,
+      type: new GraphQLList(EventType),
       async resolve(parent, args) {
-        return await Event.find();
+        return Event.find();
       },
     },
   },
