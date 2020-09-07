@@ -7,8 +7,8 @@ import {
   GraphQLInputObjectType,
 } from "graphql";
 import Event, { EventDocument } from "../../models/Event";
-import { uploadFileGraphQL, deleteFile } from "../../middleware/fileManager";
-import { CheatSheetInput } from "../Cheatsheet";
+import { CheatSheetInput } from "./Cheatsheet";
+import { bulkUpload, uploadFile, bulkDelete } from "../../middleware/fileManager";
 
 const { GraphQLUpload } = require("graphql-upload");
 
@@ -42,20 +42,6 @@ const LinkInput = new GraphQLInputObjectType({
   }),
 });
 
-const bulkUpload = async (images: any) => {
-  return await Promise.all(images.map(async (image: any) => (await uploadImage(image)) as string));
-};
-
-const bulkDelete = async (files: string[]) => {
-  return await Promise.all(files.map(async (file: string) => deleteFile(file)));
-};
-
-const uploadImage = async (image: any) => {
-  const { filename, mimetype, encoding, createReadStream } = await image;
-  const stream = createReadStream();
-  return (await uploadFileGraphQL(stream, filename, mimetype)) as string;
-};
-
 const addEvent = {
   type: EventType,
   args: {
@@ -79,8 +65,8 @@ const addEvent = {
   async resolve(parent: EventDocument, args: any) {
     let { images, poster, primaryImage, ...rest } = args;
     images = await bulkUpload(args.images);
-    poster = await uploadImage(args.poster);
-    primaryImage = await uploadImage(args.primaryImage);
+    poster = await uploadFile(args.poster);
+    primaryImage = await uploadFile(args.primaryImage);
     const event = await Event.create({
       images,
       poster,
@@ -116,8 +102,10 @@ const updateEvent = {
   },
 
   async resolve(parent: EventDocument, args: any) {
-    const { id, ...updateData } = args;
-    return await Event.findByIdAndUpdate(args.id, updateData, {
+    if (args.images) args.images = await bulkUpload(args.images);
+    if (args.poster) args.poster = await uploadFile(args.poster);
+    if (args.primaryImage) args.primaryImage = await uploadFile(args.primaryImage);
+    return await Event.findByIdAndUpdate(args.id, args, {
       new: true,
       runValidators: true,
     });

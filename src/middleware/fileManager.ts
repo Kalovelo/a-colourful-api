@@ -12,29 +12,6 @@ const _getUploadDir = (mimetype: string) => {
   }
   return mimetype === "image/svg+xml" ? "src/uploads/svg" : "src/uploads/images";
 };
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, _getUploadDir(file.mimetype));
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
-});
-
-export const uploadFile = multer({
-  storage: storage,
-  fileFilter: function (req, file, cb) {
-    if (!SUPPORTED_MIMETYPES.includes(file.mimetype)) {
-      const error = createHttpError("Filetype is not supported.");
-      error.name = "Invalid filetype";
-      error.status = 415;
-      cb(error);
-    }
-    cb(null, true);
-  },
-});
-
 export const uploadFileGraphQL = (stream: any, filename: String, mimetype: string) => {
   let uploadDir = _getUploadDir(mimetype);
   const path = `${uploadDir}/${filename}`;
@@ -59,3 +36,17 @@ export const deleteFile = (path: string) =>
       return;
     }
   });
+
+export const bulkUpload = async (images: any) => {
+  return await Promise.all(images.map(async (image: any) => (await uploadFile(image)) as string));
+};
+
+export const bulkDelete = async (files: string[]) => {
+  return await Promise.all(files.map(async (file: string) => deleteFile(file)));
+};
+
+export const uploadFile = async (file: any) => {
+  const { filename, mimetype, encoding, createReadStream } = await file;
+  const stream = createReadStream();
+  return (await uploadFileGraphQL(stream, filename, mimetype)) as string;
+};
