@@ -9,6 +9,8 @@ import {
 import Event, { EventDocument } from "../../models/Event";
 import { CheatSheetInput } from "./Cheatsheet";
 import { bulkUpload, uploadFile, bulkDelete } from "../../middleware/fileManager";
+import Topic from "../../models/Topic";
+import GraphqlHTTPError from "../../utils/GraphqlHTTPError";
 
 const { GraphQLUpload } = require("graphql-upload");
 
@@ -64,7 +66,9 @@ const addEvent = {
 
   async resolve(parent: EventDocument, args: any) {
     let { images, poster, primaryImage, ...rest } = args;
-    images = await bulkUpload(args.images);
+    const topic = await Topic.findById(args.topic);
+    if (!topic) throw new GraphqlHTTPError("Topic with specific id not found", 404);
+    if (images) images = await bulkUpload(args.images);
     poster = await uploadFile(args.poster);
     primaryImage = await uploadFile(args.primaryImage);
     const event = await Event.create({
@@ -102,6 +106,10 @@ const updateEvent = {
   },
 
   async resolve(parent: EventDocument, args: any) {
+    if (args.topic) {
+      const topic = await Topic.findById(args.topic);
+      if (!topic) throw new GraphqlHTTPError("Topic with specific id not found", 404);
+    }
     if (args.images) args.images = await bulkUpload(args.images);
     if (args.poster) args.poster = await uploadFile(args.poster);
     if (args.primaryImage) args.primaryImage = await uploadFile(args.primaryImage);

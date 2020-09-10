@@ -24,6 +24,7 @@ app.use(
     graphiql: true,
     customFormatErrorFn: (error: GraphQLError) => {
       if (error.message.includes("Cast to ObjectId failed")) error.message = "Invalid ID.";
+
       const formattedError: {
         message: string;
         status?: string[] | number;

@@ -21,7 +21,7 @@ afterEach(async () => await clearDatabase());
  */
 afterAll(async () => await closeDatabase());
 
-describe("Keyword Model Test", () => {
+describe("Event Model Test", () => {
   it("CREATE - should create & save Topic successfully", async () => {
     const topicRes = await generateTopic(request);
     const topic = topicRes.data!.addTopic;

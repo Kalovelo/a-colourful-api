@@ -1,6 +1,4 @@
-import multer from "multer";
 import fs from "fs";
-import createHttpError from "http-errors";
 import GraphqlHTTPError from "../utils/GraphqlHTTPError";
 
 const SUPPORTED_MIMETYPES = ["image/svg+xml", "image/png", "image/jpeg", "image/web"];

@@ -17,7 +17,11 @@ export const graphqlRequestUpload = (
     .field("map", JSON.stringify(map));
 
   Object.values(variables).forEach((value, i) => {
-    if (contentType(extname(value))) {
+    if (typeof value == "object") {
+      Object.values(value).forEach((segment: any, j) => {
+        request.attach(`${i}`, segment);
+      });
+    } else if (contentType(extname(value))) {
       request.attach(`${i}`, value);
     } else {
       request.field(`${i}`, value);
