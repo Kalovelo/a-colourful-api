@@ -3,6 +3,8 @@ import { UserType } from "./User";
 import User, { UserDocument } from "../../models/User";
 import * as bcrypt from "bcryptjs";
 import GraphqlHTTPError from "../../utils/GraphqlHTTPError";
+import { sign } from "jsonwebtoken";
+import { ServerResponse } from "http";
 
 const register = {
   type: UserType,
@@ -20,12 +22,12 @@ const register = {
       }
 
       const hashedPassword = await bcrypt.hash(args.password, 10);
-      let role = "member";
+      let role = "Member";
 
       // should be admin
       if (args.adminPass)
         if (args.adminPass === process.env.ADMIN_PASS) {
-          role = "admin";
+          role = "Admin";
         } else throw new GraphqlHTTPError("Invalid adminPass", 400);
 
       await User.create({
@@ -46,8 +48,23 @@ const login = {
     username: { type: new GraphQLNonNull(GraphQLString)! },
     password: { type: new GraphQLNonNull(GraphQLString)! },
   },
-  async resolve(_: UserDocument, args: any, res: Response) {
+  async resolve(_: UserDocument, args: any, { res }: any) {
     const user = await User.findOne({ username: args.username });
+    if (!user) throw new GraphqlHTTPError("Username not found.", 404);
+    const valid = await bcrypt.compare(args.password, user.password);
+    if (!valid) throw new GraphqlHTTPError("Invalid Credentials", 401);
+
+    const refreshToken = sign({ userId: user.id }, process.env.ACCESS_PASS as string, {
+      expiresIn: "7d",
+    });
+
+    const accessToken = sign({ userId: user.id }, process.env.ACCESS_PASS as string, {
+      expiresIn: "1h",
+    });
+
+    res.cookie("refresh-token", refreshToken, { expiresIn: 60 * 60 * 24 * 7 });
+    res.cookie("access-token", accessToken, { expiresIn: 60 * 15 });
+    return user;
   },
 };
 

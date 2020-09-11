@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import { graphqlHTTP } from "express-graphql";
 import RootQuerySchema from "./schema/Root";
 import { GraphQLError } from "graphql";
+import cookieParser from "cookie-parser";
+import { verify } from "jsonwebtoken";
 
 const { graphqlUploadExpress } = require("graphql-upload");
 
@@ -15,25 +17,36 @@ const app: Application = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// 🍪 cookies 🍪
+app.use(cookieParser());
+
+app.use((req: any, _, next) => {
+  const accessToken = req.cookies["access-token"];
+  if (accessToken) {
+    const data = verify(accessToken, process.env.ACCESS_PASS as string) as any;
+    req.userId = data.userId;
+  }
+  next();
+});
+
 //GraphQL
 app.use(
   "/graphql",
   graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }),
-  graphqlHTTP({
+  graphqlHTTP((req, res) => ({
     schema: RootQuerySchema,
     graphiql: true,
+    context: { req, res },
     customFormatErrorFn: (error: GraphQLError) => {
       if (error.message.includes("Cast to ObjectId failed")) error.message = "Invalid ID.";
-
       const formattedError: {
         message: string;
         status?: string[] | number;
       } = { message: error.message, status: 400 };
-
       if (error.extensions?.code) formattedError.status = error.extensions.code;
       return formattedError;
     },
-  })
+  }))
 );
 
 module.exports = app;
