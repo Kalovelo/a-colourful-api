@@ -9,7 +9,7 @@ import { EventType } from "./Event/Event";
 import { mutations as eventMutations } from "./Event/Mutations";
 
 const RootQuery = new GraphQLObjectType({
-  name: "RootQueryType",
+  name: "RootQuery",
   fields: {
     topics: {
       type: new GraphQLList(TopicType),
