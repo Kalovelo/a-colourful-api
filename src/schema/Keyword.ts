@@ -1,6 +1,7 @@
 import { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLNonNull } from "graphql";
 import Keyword, { KeywordDocument } from "../models/Keyword";
 import { uploadFileGraphQL, deleteFile, uploadFile } from "../middleware/fileManager";
+import GraphqlHTTPError from "../utils/GraphqlHTTPError";
 
 const { GraphQLUpload } = require("graphql-upload");
 
@@ -19,7 +20,8 @@ const addKeyword = {
     name: { type: new GraphQLNonNull(GraphQLString)! },
     svg: { type: new GraphQLNonNull(GraphQLUpload)! },
   },
-  async resolve(parent: KeywordDocument, args: any) {
+  async resolve(parent: KeywordDocument, args: any, { req }: any) {
+    if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 403);
     const { filename, mimetype, encoding, createReadStream } = await args.svg;
     const stream = createReadStream();
     const path: string = (await uploadFileGraphQL(stream, filename, mimetype)) as string;

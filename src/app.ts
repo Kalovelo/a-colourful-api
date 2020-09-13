@@ -4,7 +4,7 @@ import { graphqlHTTP } from "express-graphql";
 import RootQuerySchema from "./schema/Root";
 import { GraphQLError } from "graphql";
 import cookieParser from "cookie-parser";
-import { verify } from "jsonwebtoken";
+import { handleToken, isAdmin } from "./middleware/Auth";
 
 const { graphqlUploadExpress } = require("graphql-upload");
 
@@ -20,14 +20,7 @@ app.use(express.json());
 // 🍪 cookies 🍪
 app.use(cookieParser());
 
-app.use((req: any, _, next) => {
-  const accessToken = req.cookies["access-token"];
-  if (accessToken) {
-    const data = verify(accessToken, process.env.ACCESS_PASS as string) as any;
-    req.userId = data.userId;
-  }
-  next();
-});
+app.use(handleToken);
 
 //GraphQL
 app.use(

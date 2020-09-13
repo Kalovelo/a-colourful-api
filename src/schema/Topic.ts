@@ -61,8 +61,10 @@ const updateTopic = {
     description: { type: GraphQLString },
     keywords: { type: GraphQLList(GraphQLID) },
   },
-  async resolve(parent: TopicDocument, args: any) {
+  async resolve(parent: TopicDocument, args: any, { req }: any) {
     try {
+      if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
+
       let data: {
         name?: string;
         description?: String;
