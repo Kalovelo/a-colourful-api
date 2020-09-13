@@ -30,7 +30,8 @@ const addTopic = {
     description: { type: new GraphQLNonNull(GraphQLString) },
     keywords: { type: new GraphQLNonNull(GraphQLList(GraphQLID)) },
   },
-  async resolve(parent: TopicDocument, args: any) {
+  async resolve(_: TopicDocument, args: any, { req }: any) {
+    if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
     try {
       const keywords = await Keyword.find()
         .where("_id")
@@ -38,7 +39,7 @@ const addTopic = {
         .catch(() => {
           return null;
         });
-      if (!keywords) throw new GraphqlHTTPError("No keyword was found.", 400);
+      if (!keywords) throw new GraphqlHTTPError("No keyword was found.", 404);
 
       const topic = await Topic.create({
         name: args.name,
@@ -99,7 +100,8 @@ const deleteTopic = {
   args: {
     id: { type: GraphQLID },
   },
-  async resolve(parent: TopicDocument, args: any) {
+  async resolve(_: TopicDocument, args: any, { req }: any) {
+    if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
     try {
       let topic = await Topic.findByIdAndDelete(args.id);
       if (!topic) throw new GraphqlHTTPError("Topic ID not found.", 400);

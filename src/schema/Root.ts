@@ -1,16 +1,15 @@
-import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLSchema } from "graphql";
-import { TopicType, TopicMutations } from "./Topic";
-import Topic from "../models/Topic";
-import { KeywordType } from "./Keyword";
-import Keyword from "../models/Keyword";
+import { GraphQLID, GraphQLList, GraphQLObjectType, GraphQLSchema } from "graphql";
 import Event from "../models/Event";
-import { keywordMutations } from "./Keyword";
-import { EventType } from "./Event/Event";
-import { mutations as eventMutations } from "./Event/Mutations";
-import { UserMutations } from "./User/Mutations";
-import { UserType } from "./User/User";
+import Keyword from "../models/Keyword";
+import Topic from "../models/Topic";
 import User from "../models/User";
 import GraphqlHTTPError from "../utils/GraphqlHTTPError";
+import { EventType } from "./Event/Event";
+import { mutations as eventMutations } from "./Event/Mutations";
+import { keywordMutations, KeywordType } from "./Keyword";
+import { TopicMutations, TopicType } from "./Topic";
+import { UserMutations } from "./User/Mutations";
+import { UserType } from "./User/User";
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",

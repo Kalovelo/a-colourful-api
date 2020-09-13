@@ -17,7 +17,7 @@ export const handleToken = async (req: any, res: any, next: NextFunction) => {
   try {
     const data = verify(accessToken, process.env.ACCESS_TOKEN_SECRET as string) as any;
     req.userId = data.userId;
-    req.isAdmin = isAdmin(data.userId);
+    req.isAdmin = await isAdmin(data.userId);
     return next();
   } catch (err) {}
 
@@ -43,7 +43,7 @@ export const handleToken = async (req: any, res: any, next: NextFunction) => {
   res.cookie("access-token", tokens.accessToken, { expiresIn: 60 * 15 });
 
   req.userId = data.userId;
-  req.isAdmin = isAdmin(data.userId);
+  req.isAdmin = await isAdmin(data.userId);
 
   next();
 };

@@ -1,6 +1,6 @@
-import { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLNonNull } from "graphql";
+import { GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
+import { uploadFile, uploadFileGraphQL } from "../middleware/fileManager";
 import Keyword, { KeywordDocument } from "../models/Keyword";
-import { uploadFileGraphQL, deleteFile, uploadFile } from "../middleware/fileManager";
 import GraphqlHTTPError from "../utils/GraphqlHTTPError";
 
 const { GraphQLUpload } = require("graphql-upload");
@@ -40,7 +40,8 @@ export const updateKeyword = {
     name: { type: GraphQLString },
     svg: { type: GraphQLString },
   },
-  async resolve(parent: KeywordDocument, args: any) {
+  async resolve(_: KeywordDocument, args: any, { req }: any) {
+    if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
     if (args.svg) args.svg = uploadFile(args.svg);
     let keyword = await Keyword.findOneAndUpdate({ _id: args.id }, args as KeywordDocument, {
       new: true,
@@ -56,7 +57,8 @@ const deleteKeyword = {
   args: {
     id: { type: new GraphQLNonNull(GraphQLID) },
   },
-  async resolve(parent: KeywordDocument, args: any) {
+  async resolve(_: KeywordDocument, args: any, { req }: any) {
+    if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
     let keyword = await Keyword.findByIdAndDelete(args.id);
     if (!keyword) throw new Error("Keyword ID not found.");
     return keyword;

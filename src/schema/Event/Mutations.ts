@@ -64,7 +64,8 @@ const addEvent = {
     fileArray: { type: ArrayLinkInput! },
   },
 
-  async resolve(parent: EventDocument, args: any) {
+  async resolve(_: EventDocument, args: any, { req }: any) {
+    if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
     let { images, poster, primaryImage, ...rest } = args;
     const topic = await Topic.findById(args.topic);
     if (!topic) throw new GraphqlHTTPError("Topic with specific id not found", 404);
@@ -105,7 +106,9 @@ const updateEvent = {
     images: { type: new GraphQLList(GraphQLUpload)! },
   },
 
-  async resolve(parent: EventDocument, args: any) {
+  async resolve(parent: EventDocument, args: any, { req }: any) {
+    if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
+
     if (args.topic) {
       const topic = await Topic.findById(args.topic);
       if (!topic) throw new GraphqlHTTPError("Topic with specific id not found", 404);
@@ -127,7 +130,8 @@ const deleteEvent = {
       type: new GraphQLNonNull(GraphQLID),
     },
   },
-  async resolve(parent: EventDocument, args: any) {
+  async resolve(parent: EventDocument, args: any, { req }: any) {
+    if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
     const event = await Event.findByIdAndDelete(args.id);
     await bulkDelete([event!.primaryImage, event!.poster, ...event!.images]);
     return event;
