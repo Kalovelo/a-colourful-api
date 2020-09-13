@@ -29,14 +29,16 @@ const register = {
           role = "Admin";
         } else throw new GraphqlHTTPError("Invalid adminPass", 400);
 
-      await User.create({
+      const newUser = await User.create({
         username: args.username,
         email: args.email,
         password: hashedPassword,
         role,
         createdAt: Date.now(),
       });
-      return true;
+      return {
+        id: newUser.id,
+      };
     } else throw new GraphqlHTTPError("Username already exists.", 403);
   },
 };

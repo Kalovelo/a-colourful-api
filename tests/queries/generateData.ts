@@ -1,9 +1,53 @@
-import { graphqlRequestUpload } from "../graphqlRequestUpload";
-import supertest, { SuperTest, Test } from "supertest";
-import keyword from "../../src/models/Keyword";
-import RootQuerySchema from "../../src/schema/Root";
 import { graphql } from "graphql";
-import Topic from "../../src/models/Topic";
+import { SuperTest, Test } from "supertest";
+import RootQuerySchema from "../../src/schema/Root";
+import { graphqlRequestUpload } from "../graphqlRequestUpload";
+
+export const generateAdmin = async (request: SuperTest<Test>) => {
+  const query = /* GraphQL */ `
+    mutation($adminPass: String) {
+      register(
+        username: "admin"
+        email: "lalal@alal.gr"
+        password: "adminPassword"
+        adminPass: $adminPass
+      ) {
+        id
+      }
+    }
+  `;
+
+  return await request
+    .post("/graphql")
+    .send({
+      query,
+    })
+    .set("Accept", "application/json")
+    .set({ adminPass: process.env.ADMIN_PASS as string });
+};
+
+export const generateSession = async (request: SuperTest<Test>) => {
+  const query = /* GraphQL */ `
+    mutation {
+      login(username: "admin", password: "adminPassword") {
+        email
+      }
+    }
+  `;
+
+  return await request
+    .post("/graphql")
+    .send({
+      query,
+    })
+    .set("Accept", "application/json")
+    .then((res) => {
+      const cookie = res.header["set-cookie"][0]
+        .split(",")
+        .map((item: string) => item.split(";")[0]);
+      request.jar.setCookies(cookie);
+    });
+};
 
 export const generateKeyword = async (request: SuperTest<Test>) => {
   const query = /* GraphQL */ `

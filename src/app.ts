@@ -20,6 +20,7 @@ app.use(express.json());
 // 🍪 cookies 🍪
 app.use(cookieParser());
 
+// JWT
 app.use(handleToken);
 
 //GraphQL
