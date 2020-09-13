@@ -5,8 +5,10 @@ import User from "../../src/models/User";
 import RootQuerySchema from "../../src/schema/Root";
 import { clearDatabase, closeDatabase, connectDatabase } from "../dbhandler";
 import { generateAdmin, generateSession } from "./generateData";
+
 const app = require("../../src/app");
 const request = supertest.agent(app);
+
 /**
  * Connect to a new in -memory database before running any tests.
  **/
@@ -40,6 +42,7 @@ describe("User Query Test", () => {
     const res = await request.post("/graphql").send({
       query,
     });
+
     expect(res.body.errors[0].status).toBe(400);
   });
 
@@ -83,8 +86,7 @@ describe("User Query Test", () => {
   });
 
   it("LOGIN - should login user successfully", async () => {
-    await generateAdmin(request);
-    await generateSession(request);
+    await generateSession(request, true);
     expect(request.jar.getCookie("access-token", new CookieAccessInfo(""))).toBeDefined();
     expect(request.jar.getCookie("refresh-token", new CookieAccessInfo(""))).toBeDefined();
   });

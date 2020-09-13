@@ -1,21 +1,27 @@
+import { CookieJar } from "cookiejar";
 import supertest from "supertest";
-import { closeDatabase, connectDatabase, clearDatabase } from "../dbhandler";
-import { graphqlRequestUpload } from "../graphqlRequestUpload";
 import { deleteFile } from "../../src/middleware/fileManager";
 import Keyword from "../../src/models/Keyword";
-import { graphql } from "graphql";
-import RootQuerySchema from "../../src/schema/Root";
-import { generateKeyword } from "./generateData";
+import { clearDatabase, closeDatabase, connectDatabase } from "../dbhandler";
+import { graphqlRequestUpload } from "../graphqlRequestUpload";
+import { generateKeyword, generateSession } from "./generateData";
 const app = require("../../src/app");
-const request = supertest(app);
+const request = supertest.agent(app);
+
 /**
  * Connect to a new in -memory database before running any tests.
  **/
-beforeAll(async () => await connectDatabase());
+beforeAll(async () => {
+  await connectDatabase();
+});
 
 /**
  * Clear all test data after every test.
  */
+beforeEach(async () => {
+  await generateSession(request, true);
+});
+
 afterEach(async () => await clearDatabase());
 
 /**
@@ -27,11 +33,28 @@ describe("Keyword Model Test", () => {
   it("CREATE - should create & save keyword successfully", async () => {
     const res = await generateKeyword(request);
     const filePath = "src/uploads/svg/sample.svg";
+
     const savedKeyword = res.body.data.addKeyword;
     expect(savedKeyword.id).toBeDefined();
     expect(savedKeyword.name).toBe("testKeyword");
     expect(savedKeyword.svg).toBe(filePath);
     deleteFile(filePath);
+  });
+
+  it("CREATE - should fail create & save keyword without being logged in", async () => {
+    request.jar = new CookieJar();
+    const res = await generateKeyword(request);
+    const savedKeyword = res.body.data.addKeyword;
+    expect(res.body.errors[0].status).toBe(401);
+    expect(savedKeyword).toBeNull();
+  });
+
+  it("CREATE - should fail create & save keyword without being an admin", async () => {
+    await generateSession(request);
+    const res = await generateKeyword(request);
+    const savedKeyword = res.body.data.addKeyword;
+    expect(res.body.errors[0].status).toBe(401);
+    expect(savedKeyword).toBeNull();
   });
 
   it("CREATE - should fail create keyword unknown field", async () => {
@@ -81,16 +104,21 @@ describe("Keyword Model Test", () => {
       }
     `;
 
-    const res = await graphql(RootQuerySchema, query);
-    expect(res.data!.keywords.length).toBe(2);
+    const res = await request
+      .post("/graphql")
+      .send({
+        query,
+      })
+      .set("Accept", "application/json");
+    expect(res.body.data!.keywords.length).toBe(2);
   });
 
   it("GET - should get keyword with specific ID", async () => {
     const res = await generateKeyword(request);
     const savedKeywordID = res.body.data.addKeyword.id;
     const query = /* GraphQL */ `
-      query($keywordID: ID) {
-        keyword(id: $keywordID) {
+      query {
+        keyword(id: "${savedKeywordID}") {
           id
           name
           svg
@@ -98,18 +126,18 @@ describe("Keyword Model Test", () => {
       }
     `;
 
-    const getRes = await graphql(RootQuerySchema, query, null, null, {
-      keywordID: savedKeywordID,
+    const getRes = await request.post("/graphql").send({
+      query,
     });
-    expect(getRes.data!.keyword.id).toBe(savedKeywordID);
+    expect(getRes.body.data!.keyword.id).toBe(savedKeywordID);
   });
 
-  it("UPDATE - should create & save keyword successfully", async () => {
+  it("UPDATE - should update & save keyword successfully", async () => {
     const res = await generateKeyword(request);
     const savedKeywordID = res.body.data.addKeyword.id;
     const query = /* GraphQL */ `
-      mutation($keywordID: String) {
-        updateKeyword(id: $keywordID, name: "amazing") {
+      mutation {
+        updateKeyword(id: "${savedKeywordID}", name: "amazing") {
           name
           id
           svg
@@ -117,18 +145,61 @@ describe("Keyword Model Test", () => {
       }
     `;
 
-    const updateRes = await graphql(RootQuerySchema, query, null, null, {
-      keywordID: savedKeywordID,
+    const updateRes = await request.post("/graphql").send({
+      query,
     });
-    expect(updateRes.data!.updateKeyword.name).toBe("amazing");
+    expect(updateRes.body.data.updateKeyword.name).toBe("amazing");
+  });
+
+  it("UPDATE - should fail update & save keyword without being logged in", async () => {
+    const res = await generateKeyword(request);
+    const savedKeywordID = res.body.data.addKeyword.id;
+    const query = /* GraphQL */ `
+      mutation {
+        updateKeyword(id: "${savedKeywordID}", name: "amazing") {
+          name
+          id
+          svg
+        }
+      }
+    `;
+    request.jar = new CookieJar();
+
+    const updateRes = await request.post("/graphql").send({
+      query,
+    });
+    expect(updateRes.body.errors[0].status).toBe(401);
+    expect(updateRes.body.data.updateKeyword).toBeNull();
+  });
+
+  it("UPDATE - should fail update & save keyword without being an admin", async () => {
+    const res = await generateKeyword(request);
+    const savedKeywordID = res.body.data.addKeyword.id;
+    const query = /* GraphQL */ `
+      mutation {
+        updateKeyword(id: "${savedKeywordID}", name: "amazing") {
+          name
+          id
+          svg
+        }
+      }
+    `;
+
+    await generateSession(request);
+
+    const updateRes = await request.post("/graphql").send({
+      query,
+    });
+    expect(updateRes.body.errors[0].status).toBe(401);
+    expect(updateRes.body.data.updateKeyword).toBeNull();
   });
 
   it("DELETE - should delete keyword successfully", async () => {
     const res = await generateKeyword(request);
     const savedKeywordID = res.body.data.addKeyword.id;
     const query = /* GraphQL */ `
-      mutation($keywordID: ID) {
-        deleteKeyword(id: $keywordID) {
+      mutation {
+        deleteKeyword(id: "${savedKeywordID}") {
           name
           id
           svg
@@ -136,11 +207,59 @@ describe("Keyword Model Test", () => {
       }
     `;
 
-    await graphql(RootQuerySchema, query, null, null, {
-      keywordID: savedKeywordID,
+    await request.post("/graphql").send({
+      query,
     });
 
     const keyword = Keyword.findById(savedKeywordID);
     expect(keyword).toBeUndefined;
+  });
+
+  it("DELETE - should fail to delete keyword without being logged in", async () => {
+    const res = await generateKeyword(request);
+    const savedKeywordID = res.body.data.addKeyword.id;
+    const query = /* GraphQL */ `
+      mutation {
+        deleteKeyword(id: "${savedKeywordID}") {
+          name
+          id
+          svg
+        }
+      }
+    `;
+
+    request.jar = new CookieJar();
+
+    const deleteRes = await request.post("/graphql").send({
+      query,
+    });
+
+    const keyword = Keyword.findById(savedKeywordID);
+    expect(deleteRes.body.errors[0].status).toBe(401);
+    expect(keyword).toBeDefined;
+  });
+
+  it("DELETE - should fail to delete keyword without being logged in", async () => {
+    const res = await generateKeyword(request);
+    const savedKeywordID = res.body.data.addKeyword.id;
+    const query = /* GraphQL */ `
+      mutation {
+        deleteKeyword(id: "${savedKeywordID}") {
+          name
+          id
+          svg
+        }
+      }
+    `;
+
+    await generateSession(request);
+
+    const deleteRes = await request.post("/graphql").send({
+      query,
+    });
+
+    const keyword = Keyword.findById(savedKeywordID);
+    expect(deleteRes.body.errors[0].status).toBe(401);
+    expect(keyword).toBeDefined;
   });
 });

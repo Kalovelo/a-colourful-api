@@ -5,31 +5,52 @@ import { graphqlRequestUpload } from "../graphqlRequestUpload";
 
 export const generateAdmin = async (request: SuperTest<Test>) => {
   const query = /* GraphQL */ `
-    mutation($adminPass: String) {
+    mutation {
       register(
         username: "admin"
         email: "lalal@alal.gr"
         password: "adminPassword"
-        adminPass: $adminPass
+        adminPass: "${process.env.ADMIN_PASS}"
       ) {
         id
       }
     }
   `;
 
-  return await request
-    .post("/graphql")
-    .send({
-      query,
-    })
-    .set("Accept", "application/json")
-    .set({ adminPass: process.env.ADMIN_PASS as string });
+  return await request.post("/graphql").send({
+    query,
+  });
 };
 
-export const generateSession = async (request: SuperTest<Test>) => {
+export const generateMember = async (request: SuperTest<Test>) => {
   const query = /* GraphQL */ `
     mutation {
-      login(username: "admin", password: "adminPassword") {
+      register(username: "member", email: "lalal@alal.gr", password: "memberPassword") {
+        id
+      }
+    }
+  `;
+
+  return await request.post("/graphql").send({
+    query,
+  });
+};
+
+export const generateSession = async (request: SuperTest<Test>, isAdmin = false) => {
+  let username;
+  let password;
+  if (isAdmin) {
+    username = "admin";
+    password = "adminPassword";
+    await generateAdmin(request);
+  } else {
+    username = "member";
+    password = "memberPassword";
+    await generateMember(request);
+  }
+  const query = /* GraphQL */ `
+    mutation {
+      login(username: "${username}", password: "${password}") {
         email
       }
     }

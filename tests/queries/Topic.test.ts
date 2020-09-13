@@ -5,7 +5,7 @@ import RootQuerySchema from "../../src/schema/Root";
 import { generateKeyword, generateTopic } from "./generateData";
 import Topic from "../../src/models/Topic";
 const app = require("../../src/app");
-const request = supertest(app);
+const request = supertest.agent(app);
 /**
  * Connect to a new in -memory database before running any tests.
  **/
