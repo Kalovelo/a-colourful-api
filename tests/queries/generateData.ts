@@ -146,6 +146,6 @@ export const generateEvent = async (request: SuperTest<Test>) => {
     topicID: tid,
     poster: "tests/files/sample.svg",
     primaryImage: "tests/files/sample.svg",
-    images: ["tests/files/sample.svg", "tests/files/sample.svg"],
+    images: ["tests/files/sample.svg"],
   });
 };

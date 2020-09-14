@@ -2,15 +2,23 @@ import supertest from "supertest";
 import { closeDatabase, connectDatabase, clearDatabase } from "../dbhandler";
 import { graphql } from "graphql";
 import RootQuerySchema from "../../src/schema/Root";
-import { generateTopic, generateEvent } from "./generateData";
+import { generateTopic, generateEvent, generateSession } from "./generateData";
 import Event from "../../src/models/Event";
 import { graphqlRequestUpload } from "../graphqlRequestUpload";
+import { CookieJar } from "cookiejar";
 const app = require("../../src/app");
-const request = supertest(app);
+const request = supertest.agent(app);
 /**
  * Connect to a new in -memory database before running any tests.
  **/
 beforeAll(async () => await connectDatabase());
+
+/**
+ * Create Admin Session
+ */
+beforeEach(async () => {
+  await generateSession(request, true);
+});
 
 /**
  * Clear all test data after every test.
@@ -28,6 +36,24 @@ describe("Event Model Test", () => {
     const event = eventRes.body.data.addEvent;
     expect(event.id).toBeDefined();
     expect(event.name).toBe("testEvent");
+  });
+
+  it("CREATE - should fail create & save Event without being logged in", async () => {
+    request.jar = new CookieJar();
+    try {
+      await generateEvent(request);
+    } catch (err) {
+      expect(err).toBeDefined();
+    }
+  });
+
+  it("CREATE - should fail create & save topic without being admin", async () => {
+    await generateSession(request);
+    try {
+      await generateEvent(request);
+    } catch (err) {
+      expect(err).toBeDefined();
+    }
   });
 
   it("CREATE - should fail create Event unknown field", async () => {
@@ -70,9 +96,8 @@ describe("Event Model Test", () => {
       topicID: tid,
       poster: "tests/files/sample.svg",
       primaryImage: "tests/files/sample.svg",
-      images: ["tests/files/sample.svg", "tests/files/sample.svg"],
+      images: ["tests/files/sample.svg"],
     });
-
     expect(res.status).toBe(400);
   });
 
@@ -84,7 +109,7 @@ describe("Event Model Test", () => {
       mutation($primaryImage: Upload, $images: [Upload], $poster: Upload) {
         addEvent(
           name: "testEvent"
-          topic: "5f4bebf2d98d5b27b68b48c6"
+          topic: "5f4bebf2d98d5b27b68b4zzz"
           poster: $poster
           date: "10/10/2010"
           images: $images
@@ -114,7 +139,7 @@ describe("Event Model Test", () => {
     const res = await graphqlRequestUpload(query, request, {
       poster: "tests/files/sample.svg",
       primaryImage: "tests/files/sample.svg",
-      images: ["tests/files/sample.svg", "tests/files/sample.svg"],
+      images: ["tests/files/sample.svg"],
     });
 
     expect(res.body.data.addEvent).toBeNull();
@@ -158,7 +183,7 @@ describe("Event Model Test", () => {
       topicID: tid,
       poster: "tests/files/sample.svg",
       primaryImage: "tests/files/sample.svg",
-      images: ["tests/files/sample.svg", "tests/files/sample.svg"],
+      images: ["tests/files/sample.svg"],
     });
 
     expect(res.status).toBe(400);
@@ -200,7 +225,7 @@ describe("Event Model Test", () => {
     expect(getRes.body.data!.event.id).toBe(savedEventID);
   });
 
-  it("UPDATE - should create & save event successfully", async () => {
+  it("UPDATE - should update & save event successfully", async () => {
     const res = await generateEvent(request);
     const savedEventID = res.body.data.addEvent.id;
     const query = /* GraphQL */ `
@@ -219,12 +244,54 @@ describe("Event Model Test", () => {
     expect(updateRes.body.data!.updateEvent.name).toBe("amazing");
   });
 
+  it("UPDATE - should fail to update event without being logged in", async () => {
+    const res = await generateEvent(request);
+    const savedEventID = res.body.data.addEvent.id;
+    const query = /* GraphQL */ `
+      mutation {
+        updateEvent(id: "${savedEventID}", name: "amazing") {
+          name
+          id
+        }
+      }
+    `;
+
+    request.jar = new CookieJar();
+
+    const updateRes = await request.post("/graphql").send({
+      query,
+    });
+
+    expect(updateRes.body.errors[0].status).toBe(401);
+  });
+
+  it("UPDATE - should fail to update event without being an admin", async () => {
+    const res = await generateEvent(request);
+    const savedEventID = res.body.data.addEvent.id;
+    const query = /* GraphQL */ `
+      mutation {
+        updateEvent(id: "${savedEventID}", name: "amazing") {
+          name
+          id
+        }
+      }
+    `;
+
+    await generateSession(request);
+
+    const updateRes = await request.post("/graphql").send({
+      query,
+    });
+
+    expect(updateRes.body.errors[0].status).toBe(401);
+  });
+
   it("UPDATE - should fail update event with unknown topic", async () => {
     const res = await generateEvent(request);
     const savedEventID = res.body.data.addEvent.id;
     const query = /* GraphQL */ `
       mutation {
-        updateEvent(id: "${savedEventID}", name: "amazing", topic: "5f4bebf2d98d5b27b68b48c6") {
+        updateEvent(id: "${savedEventID}", name: "amazing", topic: "5f4bebf2d98d5b27b68b4zzz") {
           name
           id
         }
@@ -256,5 +323,51 @@ describe("Event Model Test", () => {
     });
     const event = Event.findById(savedEventID);
     expect(event).toBeUndefined;
+  });
+
+  it("DELETE - should fail to delete event without being logged in", async () => {
+    const res = await generateEvent(request);
+    const savedEventID = res.body.data.addEvent.id;
+    const query = /* GraphQL */ `
+      mutation {
+        deleteEvent(id: "${savedEventID}") {
+          name
+          id
+        }
+      }
+    `;
+
+    request.jar = new CookieJar();
+
+    const deleteRes = await request.post("/graphql").send({
+      query,
+    });
+
+    const event = Event.findById(savedEventID);
+    expect(deleteRes.body.errors[0].status).toBe(401);
+    expect(event).toBeDefined;
+  });
+
+  it("DELETE - should fail to delete event without being an admin", async () => {
+    const res = await generateEvent(request);
+    const savedEventID = res.body.data.addEvent.id;
+    const query = /* GraphQL */ `
+      mutation {
+        deleteEvent(id: "${savedEventID}") {
+          name
+          id
+        }
+      }
+    `;
+
+    await generateSession(request);
+
+    const deleteRes = await request.post("/graphql").send({
+      query,
+    });
+
+    const event = Event.findById(savedEventID);
+    expect(deleteRes.body.errors[0].status).toBe(401);
+    expect(event).toBeDefined;
   });
 });
