@@ -32,7 +32,7 @@ describe("Event Model Test", () => {
 
   it("CREATE - should fail create Event unknown field", async () => {
     const TopicRes = await generateTopic(request);
-    const tid = TopicRes.data!.addTopic.id;
+    const tid = TopicRes.body.data!.addTopic.id;
 
     const query = /* GraphQL */ `
     mutation($primaryImage: Upload, $images: [Upload], $poster: Upload) {
@@ -78,7 +78,7 @@ describe("Event Model Test", () => {
 
   it("CREATE - should fail create Event undefined topic", async () => {
     const TopicRes = await generateTopic(request);
-    const tid = TopicRes.data!.addTopic.id;
+    const tid = TopicRes.body.data!.addTopic.id;
 
     const query = /* GraphQL */ `
       mutation($primaryImage: Upload, $images: [Upload], $poster: Upload) {
@@ -122,7 +122,7 @@ describe("Event Model Test", () => {
 
   it("CREATE - should fail create Event without required field", async () => {
     const TopicRes = await generateTopic(request);
-    const tid = TopicRes.data!.addTopic.id;
+    const tid = TopicRes.body.data!.addTopic.id;
 
     const query = /* GraphQL */ `
     mutation($primaryImage: Upload, $images: [Upload], $poster: Upload) {
@@ -176,8 +176,10 @@ describe("Event Model Test", () => {
       }
     `;
 
-    const res = await graphql(RootQuerySchema, query);
-    expect(res.data!.events.length).toBe(2);
+    const res = await request.post("/graphql").send({
+      query,
+    });
+    expect(res.body.data!.events.length).toBe(2);
   });
 
   it("GET - should get event with specific ID", async () => {
@@ -192,45 +194,48 @@ describe("Event Model Test", () => {
       }
     `;
 
-    const getRes = await graphql(RootQuerySchema, query, null, null);
-    expect(getRes.data!.event.id).toBe(savedEventID);
+    const getRes = await request.post("/graphql").send({
+      query,
+    });
+    expect(getRes.body.data!.event.id).toBe(savedEventID);
   });
 
   it("UPDATE - should create & save event successfully", async () => {
     const res = await generateEvent(request);
     const savedEventID = res.body.data.addEvent.id;
     const query = /* GraphQL */ `
-      mutation($EventID: ID!) {
-        updateEvent(id: $EventID, name: "amazing") {
+      mutation {
+        updateEvent(id: "${savedEventID}", name: "amazing") {
           name
           id
         }
       }
     `;
 
-    const updateRes = await graphql(RootQuerySchema, query, null, null, {
-      EventID: savedEventID,
+    const updateRes = await request.post("/graphql").send({
+      query,
     });
-    expect(updateRes.data!.updateEvent.name).toBe("amazing");
+
+    expect(updateRes.body.data!.updateEvent.name).toBe("amazing");
   });
 
   it("UPDATE - should fail update event with unknown topic", async () => {
     const res = await generateEvent(request);
     const savedEventID = res.body.data.addEvent.id;
     const query = /* GraphQL */ `
-      mutation($EventID: ID!) {
-        updateEvent(id: $EventID, name: "amazing", topic: "5f4bebf2d98d5b27b68b48c6") {
+      mutation {
+        updateEvent(id: "${savedEventID}", name: "amazing", topic: "5f4bebf2d98d5b27b68b48c6") {
           name
           id
         }
       }
     `;
 
-    const updateRes = await graphql(RootQuerySchema, query, null, null, {
-      EventID: savedEventID,
+    const updateRes = await request.post("/graphql").send({
+      query,
     });
 
-    expect(updateRes.data!.updateEvent).toBeNull();
+    expect(updateRes.body.data!.updateEvent).toBeNull();
   });
 
   it("DELETE - should delete event successfully", async () => {

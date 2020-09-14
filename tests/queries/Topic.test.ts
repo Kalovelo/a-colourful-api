@@ -1,15 +1,21 @@
+import { CookieJar } from "cookiejar";
 import supertest from "supertest";
-import { closeDatabase, connectDatabase, clearDatabase } from "../dbhandler";
-import { graphql } from "graphql";
-import RootQuerySchema from "../../src/schema/Root";
-import { generateKeyword, generateTopic } from "./generateData";
 import Topic from "../../src/models/Topic";
+import { clearDatabase, closeDatabase, connectDatabase } from "../dbhandler";
+import { generateKeyword, generateSession, generateTopic } from "./generateData";
 const app = require("../../src/app");
 const request = supertest.agent(app);
 /**
  * Connect to a new in -memory database before running any tests.
  **/
 beforeAll(async () => await connectDatabase());
+
+/**
+ * Create Admin Session
+ */
+beforeEach(async () => {
+  await generateSession(request, true);
+});
 
 /**
  * Clear all test data after every test.
@@ -24,7 +30,7 @@ afterAll(async () => await closeDatabase());
 describe("Event Model Test", () => {
   it("CREATE - should create & save Topic successfully", async () => {
     const topicRes = await generateTopic(request);
-    const topic = topicRes.data!.addTopic;
+    const topic = topicRes.body.data.addTopic;
 
     expect(topic.id).toBeDefined();
     expect(topic.name).toBe("testTopic");
@@ -37,12 +43,12 @@ describe("Event Model Test", () => {
     const keywordRes = await generateKeyword(request);
     const keywordID = keywordRes.body.data.addKeyword.id;
     const query = /* GraphQL */ `
-      mutation($keywords: [ID]!) {
+      mutation {
         addTopic(
           name: "testTopic"
           randomField: "random"
           description: "testTopicDescription"
-          keywords: $keywords
+          keywords: [ "${keywordID}", "${keywordID}"]
         ) {
           name
           id
@@ -54,18 +60,18 @@ describe("Event Model Test", () => {
       }
     `;
 
-    const res = await graphql(RootQuerySchema, query, null, null, {
-      keywords: [keywordID],
+    const res = await request.post("/graphql").send({
+      query,
     });
-    expect(res.errors).toBeDefined();
+    expect(res.body.errors).toBeDefined();
   });
 
-  it("CREATE - should fail create Topic unknown field", async () => {
+  it("CREATE - should fail create Topic without required field", async () => {
     const keywordRes = await generateKeyword(request);
     const keywordID = keywordRes.body.data.addKeyword.id;
     const query = /* GraphQL */ `
-      mutation($keywords: [ID]!) {
-        addTopic(randomField: "random", description: "testTopicDescription", keywords: $keywords) {
+      mutation {
+        addTopic(description: "testTopicDescription", keywords: [ "${keywordID}", "${keywordID}"]) {
           name
           id
           description
@@ -76,13 +82,31 @@ describe("Event Model Test", () => {
       }
     `;
 
-    const res = await graphql(RootQuerySchema, query, null, null, {
-      keywords: [keywordID],
+    const res = await request.post("/graphql").send({
+      query,
     });
-    expect(res.errors).toBeDefined();
+    expect(res.body.errors).toBeDefined();
   });
 
-  it("GET - should all the keywords", async () => {
+  it("CREATE - should fail create & save topic without being logged in", async () => {
+    request.jar = new CookieJar();
+    try {
+      await generateTopic(request);
+    } catch (err) {
+      expect(err).toBeDefined();
+    }
+  });
+
+  it("CREATE - should fail create & save topic without being an admin", async () => {
+    await generateSession(request);
+    try {
+      await generateTopic(request);
+    } catch (err) {
+      expect(err).toBeDefined();
+    }
+  });
+
+  it("GET - should all the topics", async () => {
     await generateTopic(request);
     await generateTopic(request);
 
@@ -94,63 +118,151 @@ describe("Event Model Test", () => {
       }
     `;
 
-    const res = await graphql(RootQuerySchema, query);
-    expect(res.data!.topics.length).toBe(2);
+    const res = await request.post("/graphql").send({
+      query,
+    });
+    expect(res.body.data.topics.length).toBe(2);
   });
 
-  it("GET - should get keyword with specific ID", async () => {
+  it("GET - should get topic with specific ID", async () => {
     const res = await generateTopic(request);
-    const savedTopicID = res.data!.addTopic.id;
+    const savedTopicID = res.body.data!.addTopic.id;
     const query = /* GraphQL */ `
-      query($topicID: ID) {
-        topic(id: $topicID) {
+      query {
+        topic(id: "${savedTopicID}") {
           id
           name
         }
       }
     `;
-
-    const getRes = await graphql(RootQuerySchema, query, null, null, {
-      topicID: savedTopicID,
+    const getRes = await request.post("/graphql").send({
+      query,
     });
-    expect(getRes.data!.topic.id).toBe(savedTopicID);
+    expect(getRes.body.data.topic.id).toBe(savedTopicID);
   });
 
-  it("UPDATE - should create & save keyword successfully", async () => {
+  it("UPDATE - should update topic successfully", async () => {
     const res = await generateTopic(request);
-    const savedTopicID = res.data!.addTopic.id;
+    const savedTopicID = res.body.data!.addTopic.id;
     const query = /* GraphQL */ `
-      mutation($topicID: ID!) {
-        updateTopic(id: $topicID, name: "amazing") {
+      mutation {
+          updateTopic(id: "${savedTopicID}", name: "amazing") {
+          name
+          id
+        }
+      }
+    `;
+    const updateRes = await request.post("/graphql").send({
+      query,
+    });
+    expect(updateRes.body.data!.updateTopic.name).toBe("amazing");
+  });
+
+  it("UPDATE - should fail to update topic without being admin", async () => {
+    const res = await generateTopic(request);
+    const savedTopicID = res.body.data!.addTopic.id;
+    const query = /* GraphQL */ `
+      mutation {
+          updateTopic(id: "${savedTopicID}", name: "amazing") {
           name
           id
         }
       }
     `;
 
-    const updateRes = await graphql(RootQuerySchema, query, null, null, {
-      topicID: savedTopicID,
+    await generateSession(request);
+
+    const updateRes = await request.post("/graphql").send({
+      query,
     });
-    expect(updateRes.data!.updateTopic.name).toBe("amazing");
+    expect(updateRes.body.errors[0].status).toBe(401);
+    expect(updateRes.body.data.updateTopic).toBeNull();
+  });
+
+  it("UPDATE - should fail to update topic without being logged in", async () => {
+    const res = await generateTopic(request);
+    const savedTopicID = res.body.data!.addTopic.id;
+    const query = /* GraphQL */ `
+      mutation {
+          updateTopic(id: "${savedTopicID}", name: "amazing") {
+          name
+          id
+        }
+      }
+    `;
+
+    request.jar = new CookieJar();
+
+    const updateRes = await request.post("/graphql").send({
+      query,
+    });
+
+    expect(updateRes.body.errors[0].status).toBe(401);
+    expect(updateRes.body.data.updateTopic).toBeNull();
   });
 
   it("DELETE - should delete topic successfully", async () => {
     const res = await generateTopic(request);
-    const savedTopicID = res.data!.addTopic.id;
+    const savedTopicID = res.body.data!.addTopic.id;
     const query = /* GraphQL */ `
-      mutation($topicID: ID!) {
-        deleteTopic(id: $topicID) {
+      mutation {
+        deleteTopic(id: "${savedTopicID}") {
           name
           id
-          svg
         }
       }
     `;
 
-    await graphql(RootQuerySchema, query, null, null, {
-      topicID: savedTopicID,
+    await request.post("/graphql").send({
+      query,
     });
     const topic = Topic.findById(savedTopicID);
     expect(topic).toBeUndefined;
+  });
+
+  it("DELETE - should fail to delete topic without being logged in", async () => {
+    const res = await generateTopic(request);
+    const savedTopicID = res.body.data!.addTopic.id;
+    const query = /* GraphQL */ `
+      mutation {
+        deleteTopic(id: "${savedTopicID}") {
+          name
+          id
+        }
+      }
+    `;
+
+    request.jar = new CookieJar();
+
+    const deleteRes = await request.post("/graphql").send({
+      query,
+    });
+
+    const topic = Topic.findById(savedTopicID);
+    expect(deleteRes.body.errors[0].status).toBe(401);
+    expect(topic).toBeDefined;
+  });
+
+  it("DELETE - should delete topic without being admin", async () => {
+    const res = await generateTopic(request);
+    const savedTopicID = res.body.data!.addTopic.id;
+    const query = /* GraphQL */ `
+      mutation {
+        deleteTopic(id: "${savedTopicID}") {
+          name
+          id
+        }
+      }
+    `;
+
+    await generateSession(request);
+
+    const deleteRes = await request.post("/graphql").send({
+      query,
+    });
+
+    const topic = Topic.findById(savedTopicID);
+    expect(deleteRes.body.errors[0].status).toBe(401);
+    expect(topic).toBeDefined;
   });
 });

@@ -16,12 +16,15 @@ beforeAll(async () => {
 });
 
 /**
- * Clear all test data after every test.
+ * Create Admin Session
  */
 beforeEach(async () => {
   await generateSession(request, true);
 });
 
+/**
+ * Clear all test data after every test.
+ */
 afterEach(async () => await clearDatabase());
 
 /**

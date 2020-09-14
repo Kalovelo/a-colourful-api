@@ -63,9 +63,8 @@ const updateTopic = {
     keywords: { type: GraphQLList(GraphQLID) },
   },
   async resolve(parent: TopicDocument, args: any, { req }: any) {
+    if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
     try {
-      if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
-
       let data: {
         name?: string;
         description?: String;
@@ -104,7 +103,7 @@ const deleteTopic = {
     if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
     try {
       let topic = await Topic.findByIdAndDelete(args.id);
-      if (!topic) throw new GraphqlHTTPError("Topic ID not found.", 400);
+      if (!topic) throw new GraphqlHTTPError("Topic ID not found.", 404);
       return topic;
     } catch (err) {
       throw new GraphqlHTTPError(err.message, 400);

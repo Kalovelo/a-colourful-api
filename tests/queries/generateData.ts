@@ -90,8 +90,8 @@ export const generateTopic = async (request: SuperTest<Test>) => {
   const keywordRes = await generateKeyword(request);
   const keywordID = keywordRes.body.data.addKeyword.id;
   const query = /* GraphQL */ `
-    mutation($keywords: [ID]!) {
-      addTopic(name: "testTopic", description: "testTopicDescription", keywords: $keywords) {
+    mutation{
+      addTopic(name: "testTopic", description: "testTopicDescription", keywords: [ "${keywordID}", "${keywordID}"]) {
         name
         id
         description
@@ -102,14 +102,14 @@ export const generateTopic = async (request: SuperTest<Test>) => {
       }
     }
   `;
-  return await graphql(RootQuerySchema, query, null, null, {
-    keywords: [keywordID],
+  return await request.post("/graphql").send({
+    query,
   });
 };
 
 export const generateEvent = async (request: SuperTest<Test>) => {
   const TopicRes = await generateTopic(request);
-  const tid = TopicRes.data!.addTopic.id;
+  const tid = TopicRes.body.data.addTopic.id;
 
   const query = /* GraphQL */ `
     mutation($primaryImage: Upload, $images: [Upload], $poster: Upload) {
