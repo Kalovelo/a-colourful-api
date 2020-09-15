@@ -1,8 +1,6 @@
-# A colourful API
+# A colourful (GraphQL) API
 
 This is the api for https://github.com/Kalovelo/a-colourful-presentation
-
-❗ A GraphQL API
 
 ## Get Started
 
@@ -19,11 +17,7 @@ This is the api for https://github.com/Kalovelo/a-colourful-presentation
 |   npm run build    |   Build project    |
 |    npm run test    |   Run jest tests   |
 | npm run type-check |  Run typechecking  |
-|    npm run doc     |    Create Docs     |
 
-## API 
-<a href="./api.md"> Docs </a> 
+## API
 
-### Postman
-
-You can import the postman collection (`postman-collection.json`) and use the predefined requests.
+You can navigate to `/graphql/` and check the query documendation.
