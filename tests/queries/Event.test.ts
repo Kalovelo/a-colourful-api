@@ -6,6 +6,7 @@ import { generateTopic, generateEvent, generateSession } from "./generateData";
 import Event from "../../src/models/Event";
 import { graphqlRequestUpload } from "../graphqlRequestUpload";
 import { CookieJar } from "cookiejar";
+import { emptyUploadFolders } from "../fileHandler";
 const app = require("../../src/app");
 const request = supertest.agent(app);
 /**
@@ -28,7 +29,10 @@ afterEach(async () => await clearDatabase());
 /**
  * Remove and close the db and server.
  */
-afterAll(async () => await closeDatabase());
+afterAll(async () => {
+  await closeDatabase();
+  await emptyUploadFolders();
+});
 
 describe("Event Model Test", () => {
   it("CREATE - should create & save Event successfully", async () => {

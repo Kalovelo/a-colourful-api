@@ -1,8 +1,10 @@
 import { CookieJar } from "cookiejar";
+import { fstat } from "fs";
 import supertest from "supertest";
 import { deleteFile } from "../../src/middleware/fileManager";
 import Keyword from "../../src/models/Keyword";
 import { clearDatabase, closeDatabase, connectDatabase } from "../dbhandler";
+import { emptyUploadFolders } from "../fileHandler";
 import { graphqlRequestUpload } from "../graphqlRequestUpload";
 import { generateKeyword, generateSession } from "./generateData";
 const app = require("../../src/app");
@@ -30,18 +32,18 @@ afterEach(async () => await clearDatabase());
 /**
  * Remove and close the db and server.
  */
-afterAll(async () => await closeDatabase());
+afterAll(async () => {
+  await closeDatabase();
+  await emptyUploadFolders();
+});
 
 describe("Keyword Model Test", () => {
   it("CREATE - should create & save keyword successfully", async () => {
     const res = await generateKeyword(request);
-    const filePath = "src/uploads/svg/sample.svg";
-
     const savedKeyword = res.body.data.addKeyword;
     expect(savedKeyword.id).toBeDefined();
     expect(savedKeyword.name).toBe("testKeyword");
-    expect(savedKeyword.svg).toBe(filePath);
-    deleteFile(filePath);
+    expect(savedKeyword.svg).toBeDefined();
   });
 
   it("CREATE - should fail create & save keyword without being logged in", async () => {

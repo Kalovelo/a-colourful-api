@@ -2,6 +2,7 @@ import { CookieJar } from "cookiejar";
 import supertest from "supertest";
 import Topic from "../../src/models/Topic";
 import { clearDatabase, closeDatabase, connectDatabase } from "../dbhandler";
+import { emptyUploadFolders } from "../fileHandler";
 import { generateKeyword, generateSession, generateTopic } from "./generateData";
 const app = require("../../src/app");
 const request = supertest.agent(app);
@@ -25,7 +26,11 @@ afterEach(async () => await clearDatabase());
 /**
  * Remove and close the db and server.
  */
-afterAll(async () => await closeDatabase());
+
+afterAll(async () => {
+  await closeDatabase();
+  await emptyUploadFolders();
+});
 
 describe("Event Model Test", () => {
   it("CREATE - should create & save Topic successfully", async () => {

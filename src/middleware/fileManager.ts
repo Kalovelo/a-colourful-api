@@ -20,9 +20,11 @@ const _getUploadDir = (mimetype: string) => {
   return mimetype === SUPPORTED_MIMETYPES.svg ? "src/uploads/svg" : "src/uploads/images";
 };
 
+const _formatFilename = (filename: string) => filename.replace(" ", "_");
+
 const _splitFilename = (filename: string) => {
-  var name = filename.substring(0, filename.lastIndexOf(".") + 1);
-  var extension = filename.substring(filename.lastIndexOf("/") + 1, filename.length);
+  var name = filename.substring(0, filename.lastIndexOf("."));
+  var extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length);
   return { name, extension };
 };
 
@@ -63,7 +65,7 @@ const _minify = async (rawUploadPath: string) => {
   const sharped = sharp(rawUploadPath);
   const metadata = await sharped.metadata();
   if (metadata.width && metadata!.width > MAX_IMAGE_WIDTH) {
-    const buffer = await sharped.resize(MAX_IMAGE_WIDTH).jpeg().toBuffer();
+    const buffer = await sharped.resize(MAX_IMAGE_WIDTH).toBuffer();
     sharp(buffer).toFile(rawUploadPath);
   }
 };
@@ -71,7 +73,10 @@ const _minify = async (rawUploadPath: string) => {
 export const uploadFile = async (file: any) => {
   const { filename, mimetype, createReadStream } = await file;
   const stream: Stream = createReadStream();
-  const rawUploadPath = (await _uploadFileGraphQL(stream, filename, mimetype)) as string;
+
+  const { name, extension } = _splitFilename(filename);
+  const formattedName = _formatFilename(name) + "--" + Date.now() + "." + extension;
+  const rawUploadPath = (await _uploadFileGraphQL(stream, formattedName, mimetype)) as string;
   if (mimetype !== SUPPORTED_MIMETYPES.svg) await _minify(rawUploadPath);
   return rawUploadPath;
 };
