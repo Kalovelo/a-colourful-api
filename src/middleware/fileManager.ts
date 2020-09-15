@@ -59,25 +59,19 @@ export const bulkDelete = async (files: string[]) => {
   return await Promise.all(files.map(async (file: string) => deleteFile(file)));
 };
 
-const _minify = async (rawUploadPath: string, filename: string, mimetype: string) => {
-  console.log(rawUploadPath);
+const _minify = async (rawUploadPath: string) => {
   const sharped = sharp(rawUploadPath);
   const metadata = await sharped.metadata();
   if (metadata.width && metadata!.width > MAX_IMAGE_WIDTH) {
-    let uploadDir = _getUploadDir(mimetype);
-    const { name, extension } = _splitFilename(filename);
-    const path = `${uploadDir}/${name}--minified.${extension}`;
-    await sharped.resize(Math.round(MAX_IMAGE_WIDTH)).jpeg().toFile(path);
-    await deleteFile(rawUploadPath);
-    return await path;
-  } else return rawUploadPath;
+    const buffer = await sharped.resize(MAX_IMAGE_WIDTH).jpeg().toBuffer();
+    sharp(buffer).toFile(rawUploadPath);
+  }
 };
 
 export const uploadFile = async (file: any) => {
-  const { filename, mimetype, encoding, createReadStream } = await file;
+  const { filename, mimetype, createReadStream } = await file;
   const stream: Stream = createReadStream();
   const rawUploadPath = (await _uploadFileGraphQL(stream, filename, mimetype)) as string;
-  return mimetype !== SUPPORTED_MIMETYPES.svg
-    ? await _minify(rawUploadPath, filename, mimetype)
-    : rawUploadPath;
+  if (mimetype !== SUPPORTED_MIMETYPES.svg) await _minify(rawUploadPath);
+  return rawUploadPath;
 };
