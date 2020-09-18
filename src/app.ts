@@ -5,6 +5,7 @@ import { graphqlHTTP } from "express-graphql";
 import { GraphQLError } from "graphql";
 import { handleToken } from "./middleware/Auth";
 import RootQuerySchema from "./schema/Root";
+import { errorHandler } from "./utils/errorHandler";
 const { graphqlUploadExpress } = require("graphql-upload");
 
 //Load config
@@ -36,6 +37,10 @@ app.use(
     graphiql: true,
     context: { req, res },
     customFormatErrorFn: (error: GraphQLError) => {
+      // log error
+      (req as any).log = error.message;
+      errorHandler.handleError(error, "http", { req, res });
+
       if (error.message.includes("Cast to ObjectId failed")) error.message = "Invalid ID.";
       const formattedError: {
         message: string;
