@@ -1,3 +1,5 @@
+import { errorHandler } from "../utils/errorHandler";
+
 const mongoose = require("mongoose");
 
 const connectDB: () => Promise<void> = async () => {
@@ -7,9 +9,9 @@ const connectDB: () => Promise<void> = async () => {
       useUnifiedTopology: true,
       useFindAndModify: false,
     });
-    console.log(`Mongo Connected: ${conn.connection.host}`);
+    console.log(`🚀 Mongo Connected: ${conn.connection.host}`);
   } catch (err) {
-    console.error(err);
+    errorHandler.handleError(err);
     process.exit(1);
   }
 };
