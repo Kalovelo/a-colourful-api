@@ -15,5 +15,5 @@ const KeywordSchema: Schema = new Schema({
   },
 });
 
-const keyword = mongoose.model<KeywordDocument>("Keyword", KeywordSchema);
-export default keyword;
+const Keyword = mongoose.model<KeywordDocument>("Keyword", KeywordSchema);
+export default Keyword;

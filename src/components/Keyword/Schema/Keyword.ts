@@ -1,7 +1,7 @@
 import { GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
-import { uploadFile } from "../middleware/fileManager";
-import Keyword, { KeywordDocument } from "../models/Keyword";
-import GraphqlHTTPError from "../utils/GraphqlHTTPError";
+import { uploadFile } from "../../../middleware/fileManager";
+import Keyword, { KeywordDocument } from "../model/Keyword";
+import GraphqlHTTPError from "../../../utils/GraphqlHTTPError";
 
 const { GraphQLUpload } = require("graphql-upload");
 

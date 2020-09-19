@@ -1,6 +1,4 @@
-import { graphql } from "graphql";
 import { SuperTest, Test } from "supertest";
-import RootQuerySchema from "../../src/schema/Root";
 import { graphqlRequestUpload } from "../graphqlRequestUpload";
 
 export const generateAdmin = async (request: SuperTest<Test>) => {

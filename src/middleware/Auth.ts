@@ -1,4 +1,4 @@
-import User, { UserDocument } from "../models/User";
+import User, { UserDocument } from "../components/User/model/User";
 import { verify } from "jsonwebtoken";
 import { NextFunction } from "express";
 import { sign } from "jsonwebtoken";

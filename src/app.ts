@@ -3,8 +3,8 @@ import dotenv from "dotenv";
 import express, { Application } from "express";
 import { graphqlHTTP } from "express-graphql";
 import { GraphQLError } from "graphql";
+import RootQuerySchema from "./components/Root";
 import { handleToken } from "./middleware/Auth";
-import RootQuerySchema from "./schema/Root";
 import { errorHandler } from "./utils/errorHandler";
 const { graphqlUploadExpress } = require("graphql-upload");
 

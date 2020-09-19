@@ -1,8 +1,8 @@
 import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from "graphql";
-import { KeywordType } from "./Keyword";
-import Keyword from "../models/Keyword";
-import Topic, { TopicDocument } from "../models/Topic";
-import GraphqlHTTPError from "../utils/GraphqlHTTPError";
+import { KeywordType } from "../../Keyword/Schema/Keyword";
+import Keyword from "../../Keyword/model/Keyword";
+import Topic, { TopicDocument } from "../model/Topic";
+import GraphqlHTTPError from "../../../utils/GraphqlHTTPError";
 
 export const TopicType = new GraphQLObjectType({
   name: "Topic",

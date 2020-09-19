@@ -1,16 +1,16 @@
-import { EventType, eventTypeEnum } from "./Event";
 import {
+  GraphQLID,
+  GraphQLInputObjectType,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLString,
-  GraphQLID,
-  GraphQLList,
-  GraphQLInputObjectType,
 } from "graphql";
-import Event, { EventDocument } from "../../models/Event";
+import { bulkDelete, bulkUpload, uploadFile } from "../../../middleware/fileManager";
+import GraphqlHTTPError from "../../../utils/GraphqlHTTPError";
+import Topic from "../../Topic/model/Topic";
+import Event, { EventDocument } from "../model/Event";
 import { CheatSheetInput } from "./Cheatsheet";
-import { bulkUpload, uploadFile, bulkDelete } from "../../middleware/fileManager";
-import Topic from "../../models/Topic";
-import GraphqlHTTPError from "../../utils/GraphqlHTTPError";
+import { EventType, eventTypeEnum } from "./Event";
 
 const { GraphQLUpload } = require("graphql-upload");
 

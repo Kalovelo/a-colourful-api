@@ -1,8 +1,8 @@
-import Keyword from "../../src/models/Keyword";
 import mongoose from "mongoose";
-import { closeDatabase, connectDatabase, clearDatabase } from "../dbhandler";
+import { closeDatabase, connectDatabase, clearDatabase } from "../../../../tests/dbhandler";
+import Keyword from "./Keyword";
 
-const sampleSVG = require("../files/sample.svg");
+const sampleSVG = require("../../../../tests/files/sample.svg");
 /**
  * Connect to a new in -memory database before running any tests.
  **/

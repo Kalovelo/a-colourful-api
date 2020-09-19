@@ -2,7 +2,6 @@ module.exports = {
   preset: "@shelf/jest-mongodb",
   displayName: "Colourful API tests",
   testEnvironment: "node",
-  testPathIgnorePatterns: ["DEPRECATED__routes"],
   testMatch: ["**/__tests__/**/*.+(ts|tsx|js)", "**/?(*.)+(spec|test).+(ts|tsx|js)"],
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",

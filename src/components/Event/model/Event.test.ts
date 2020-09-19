@@ -1,8 +1,9 @@
-import Event from "../../src/models/Event";
 import mongoose from "mongoose";
-import { closeDatabase, connectDatabase, clearDatabase } from "../dbhandler";
+import { clearDatabase, closeDatabase, connectDatabase } from "../../../../tests/dbhandler";
+import Event from "./Event";
 
-const sampleSVG = require("../files/sample.svg");
+const sampleSVG = require("../../../../tests/files/sample.svg");
+
 /**
  * Connect to a new in -memory database before running any tests.
  **/
