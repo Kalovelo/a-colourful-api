@@ -5,10 +5,14 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from "graphql";
-import { bulkDelete, bulkUpload, uploadFile } from "../../../middleware/fileManager";
 import GraphqlHTTPError from "../../../utils/GraphqlHTTPError";
 import Topic from "../../Topic/model/Topic";
-import Event, { EventDocument } from "../model/Event";
+import { EventDocument } from "../model/interface";
+import {
+  addEvent as addEventService,
+  deleteEvent as deleteEventService,
+  updateEvent as updateEventService,
+} from "../service/service";
 import { CheatSheetInput } from "./Cheatsheet";
 import { EventType, eventTypeEnum } from "./Event";
 
@@ -64,22 +68,11 @@ const addEvent = {
     fileArray: { type: ArrayLinkInput! },
   },
 
-  async resolve(_: EventDocument, args: any, { req }: any) {
+  async resolve(_: EventDocument, args: EventDocument, { req }: any) {
     if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
-    let { images, poster, primaryImage, ...rest } = args;
     const topic = await Topic.findById(args.topic);
     if (!topic) throw new GraphqlHTTPError("Topic with specific id not found", 404);
-    if (images) images = await bulkUpload(args.images);
-    poster = await uploadFile(args.poster);
-    primaryImage = await uploadFile(args.primaryImage);
-    const event = await Event.create({
-      images,
-      poster,
-      primaryImage,
-      ...rest,
-    });
-
-    return event;
+    return addEventService(args);
   },
 };
 
@@ -106,20 +99,9 @@ const updateEvent = {
     images: { type: new GraphQLList(GraphQLUpload)! },
   },
 
-  async resolve(parent: EventDocument, args: any, { req }: any) {
+  async resolve(_: EventDocument, args: any, { req }: any) {
     if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
-
-    if (args.topic) {
-      const topic = await Topic.findById(args.topic);
-      if (!topic) throw new GraphqlHTTPError("Topic with specific id not found", 404);
-    }
-    if (args.images) args.images = await bulkUpload(args.images);
-    if (args.poster) args.poster = await uploadFile(args.poster);
-    if (args.primaryImage) args.primaryImage = await uploadFile(args.primaryImage);
-    return await Event.findByIdAndUpdate(args.id, args, {
-      new: true,
-      runValidators: true,
-    });
+    return updateEventService(args);
   },
 };
 
@@ -130,11 +112,9 @@ const deleteEvent = {
       type: new GraphQLNonNull(GraphQLID),
     },
   },
-  async resolve(parent: EventDocument, args: any, { req }: any) {
+  async resolve(_: EventDocument, args: any, { req }: any) {
     if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
-    const event = await Event.findByIdAndDelete(args.id);
-    await bulkDelete([event!.primaryImage, event!.poster, ...event!.images]);
-    return event;
+    return deleteEventService(args.id);
   },
 };
 

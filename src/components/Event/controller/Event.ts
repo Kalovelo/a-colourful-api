@@ -1,6 +1,6 @@
 import { GraphQLEnumType, GraphQLID, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql";
 import Topic from "../../Topic/model/Topic";
-import { TopicType } from "../../Topic/schema/Topic";
+import { TopicType } from "../../Topic/controller/Topic";
 import { CheatSheetSchema } from "./Cheatsheet";
 
 const CodeSnippetSchema = new GraphQLObjectType({

@@ -1,28 +1,6 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { CheatSheetSchema } from "./CheatSheet";
-
-export interface EventDocument extends Document {
-  name: string;
-  eventType: string;
-  topic: string;
-  description: string;
-  summary: string;
-  date: Date;
-  level: string;
-  place: string;
-  poster: string;
-  primaryImage: string;
-  images: [string];
-  cheatsheet: string;
-  codeSnippets: [
-    {
-      name: string;
-      commands: [string];
-    }
-  ];
-  arrayLink: [{ name: string; links: [{ name: string; link: string }] }];
-  fileArray: { name: string; links: [{ name: string; link: string }] };
-}
+import { EventDocument } from "./interface";
 
 const CodeSnippetSchema = new Schema({
   name: {
