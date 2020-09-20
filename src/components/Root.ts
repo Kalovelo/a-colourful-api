@@ -4,10 +4,10 @@ import Keyword from "./Keyword/model/Keyword";
 import Topic from "./Topic/model/Topic";
 import User from "./User/model/User";
 import GraphqlHTTPError from "../utils/GraphqlHTTPError";
-import { EventType } from "./Event/schema/Event";
-import { mutations as eventMutations } from "./Event/schema/Mutations";
-import { keywordMutations, KeywordType } from "./Keyword/Schema/Keyword";
-import { TopicMutations, TopicType } from "./Topic/schema/Topic";
+import { EventType } from "./Event/controller/Event";
+import { mutations as eventMutations } from "./Event/controller/Mutations";
+import { keywordMutations, KeywordType } from "./Keyword/controller/Keyword";
+import { TopicMutations, TopicType } from "./Topic/controller/Topic";
 import { UserMutations } from "./User/schema/Mutations";
 import { UserType } from "./User/schema/User";
 
