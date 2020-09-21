@@ -1,7 +1,11 @@
 import { GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
-import { uploadFile } from "../middleware/fileManager";
-import Keyword, { KeywordDocument } from "../models/Keyword";
-import GraphqlHTTPError from "../utils/GraphqlHTTPError";
+import GraphqlHTTPError from "../../../utils/GraphqlHTTPError";
+import { KeywordDocument } from "../model/Keyword";
+import {
+  addKeyword as addKeywordService,
+  deleteKeyword as deleteKeywordService,
+  updateKeyword as updateKeywordService,
+} from "../service/service";
 
 const { GraphQLUpload } = require("graphql-upload");
 
@@ -20,14 +24,9 @@ const addKeyword = {
     name: { type: new GraphQLNonNull(GraphQLString)! },
     svg: { type: new GraphQLNonNull(GraphQLUpload)! },
   },
-  async resolve(_: KeywordDocument, args: any, { req }: any) {
+  async resolve(_: KeywordDocument, args: KeywordDocument, { req }: any) {
     if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
-    const path: string = await uploadFile(args.svg);
-    const keyword = await Keyword.create({
-      name: args.name,
-      svg: path,
-    });
-    return keyword;
+    return addKeywordService(args);
   },
 };
 
@@ -40,13 +39,7 @@ export const updateKeyword = {
   },
   async resolve(_: KeywordDocument, args: any, { req }: any) {
     if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
-    if (args.svg) args.svg = uploadFile(args.svg);
-    let keyword = await Keyword.findOneAndUpdate({ _id: args.id }, args as KeywordDocument, {
-      new: true,
-      runValidators: true,
-    });
-    if (!keyword) throw new Error("Keyword ID not found.");
-    return keyword;
+    return updateKeywordService(args);
   },
 };
 
@@ -57,9 +50,7 @@ const deleteKeyword = {
   },
   async resolve(_: KeywordDocument, args: any, { req }: any) {
     if (!req.isAdmin) throw new GraphqlHTTPError("Unauthorized.", 401);
-    let keyword = await Keyword.findByIdAndDelete(args.id);
-    if (!keyword) throw new Error("Keyword ID not found.");
-    return keyword;
+    return deleteKeywordService(args.id);
   },
 };
 

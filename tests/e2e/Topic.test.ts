@@ -1,6 +1,6 @@
 import { CookieJar } from "cookiejar";
 import supertest from "supertest";
-import Topic from "../../src/models/Topic";
+import Topic from "../../src/components/Topic/model/Topic";
 import { clearDatabase, closeDatabase, connectDatabase } from "../dbhandler";
 import { emptyUploadFolders } from "../fileHandler";
 import { generateKeyword, generateSession, generateTopic } from "./generateData";

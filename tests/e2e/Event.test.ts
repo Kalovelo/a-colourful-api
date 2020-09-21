@@ -1,12 +1,12 @@
 import supertest from "supertest";
 import { closeDatabase, connectDatabase, clearDatabase } from "../dbhandler";
 import { graphql } from "graphql";
-import RootQuerySchema from "../../src/schema/Root";
 import { generateTopic, generateEvent, generateSession } from "./generateData";
-import Event from "../../src/models/Event";
 import { graphqlRequestUpload } from "../graphqlRequestUpload";
 import { CookieJar } from "cookiejar";
 import { emptyUploadFolders } from "../fileHandler";
+import Event from "../../src/components/Event/model/Event";
+import RootQuerySchema from "../../src/components/Root";
 const app = require("../../src/app");
 const request = supertest.agent(app);
 /**

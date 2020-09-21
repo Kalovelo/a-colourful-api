@@ -1,8 +1,6 @@
 import { CookieJar } from "cookiejar";
-import { fstat } from "fs";
 import supertest from "supertest";
-import { deleteFile } from "../../src/middleware/fileManager";
-import Keyword from "../../src/models/Keyword";
+import Keyword from "../../src/components/Keyword/model/Keyword";
 import { clearDatabase, closeDatabase, connectDatabase } from "../dbhandler";
 import { emptyUploadFolders } from "../fileHandler";
 import { graphqlRequestUpload } from "../graphqlRequestUpload";

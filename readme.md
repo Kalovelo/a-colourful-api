@@ -21,3 +21,15 @@ This is the api for https://github.com/Kalovelo/a-colourful-presentation
 ## API
 
 You can navigate to `/graphql/` and check the query documendation.
+
+## Environmental variables
+
+used in `config.env`
+
+|        variable        |                     use                     |
+| :--------------------: | :-----------------------------------------: |
+|         `PORT`         |                 Port to run                 |
+|      `MONGO_URI`       |                Mongo DB URI                 |
+|      `ADMIN_PASS`      | Used for generating users with admin rights |
+| `ACCESS_TOKEN_SECRET`  |          used for JWT access token          |
+| `REFRESH_TOKEN_SECRET` |         used for JWT refresh token          |

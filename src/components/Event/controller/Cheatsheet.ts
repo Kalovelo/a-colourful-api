@@ -26,7 +26,7 @@ const CheatSheetCommandBlockType = new GraphQLObjectType({
   }),
 });
 
-export const CheatSheetType = new GraphQLObjectType({
+export const CheatSheetSchema = new GraphQLObjectType({
   name: "CheatSheet",
   fields: () => ({
     id: { type: GraphQLString },

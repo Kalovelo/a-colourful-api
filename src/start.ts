@@ -1,4 +1,4 @@
-import connectDB from "./config/db";
+import connectDB from "./loaders/db";
 const app = require("./app");
 
 const PORT = process.env.PORT;

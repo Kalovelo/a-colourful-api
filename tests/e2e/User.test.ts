@@ -1,8 +1,8 @@
 import { CookieAccessInfo } from "cookiejar";
 import { graphql } from "graphql";
 import supertest from "supertest";
-import User from "../../src/models/User";
-import RootQuerySchema from "../../src/schema/Root";
+import RootQuerySchema from "../../src/components/Root";
+import User from "../../src/components/User/model/User";
 import { clearDatabase, closeDatabase, connectDatabase } from "../dbhandler";
 import { generateAdmin, generateSession } from "./generateData";
 

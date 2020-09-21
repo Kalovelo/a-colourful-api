@@ -1,6 +1,6 @@
-import Topic from "../../src/models/Topic";
 import mongoose from "mongoose";
-import { closeDatabase, connectDatabase, clearDatabase } from "../dbhandler";
+import { clearDatabase, closeDatabase, connectDatabase } from "../../../../tests/dbhandler";
+import Topic from "./Topic";
 
 /**
  * Connect to a new in -memory database before running any tests.

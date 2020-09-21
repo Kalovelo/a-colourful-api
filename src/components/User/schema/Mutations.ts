@@ -1,9 +1,9 @@
 import { GraphQLString, GraphQLNonNull } from "graphql";
 import { UserType } from "./User";
-import User, { UserDocument } from "../../models/User";
+import User, { UserDocument } from "../model/User";
 import * as bcrypt from "bcryptjs";
-import GraphqlHTTPError from "../../utils/GraphqlHTTPError";
-import { createTokens } from "../../middleware/Auth";
+import GraphqlHTTPError from "../../../utils/GraphqlHTTPError";
+import { createTokens } from "../../../middleware/Auth";
 
 const register = {
   type: UserType,
