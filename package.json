@@ -4,11 +4,10 @@
   "main": "app.ts",
   "scripts": {
     "start": "tsc && node dist/start.js",
-    "dev": "nodemon ./src/start.ts",
+    "dev": "NODE_ENV=DEVELOPMENT nodemon src/start.ts",
     "build": "tsc -p .",
     "type-check": "tsc --noEmit",
-    "test": "jest",
-    "doc": "apidoc -i ./src/routes/ -o apidoc-out && apidoc-markdown -p apidoc-out -o api.md && rm -rf apidoc-out"
+    "test": "NODE_ENV=TEST jest"
   },
   "repository": {
     "type": "git",

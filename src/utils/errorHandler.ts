@@ -8,14 +8,8 @@ class ErrorHandler {
     transports: [new winston.transports.Console()],
   });
 
-  public async handleError(
-    err: Error,
-    severity: String = "error",
-    http: { req: any; res: any } = {
-      req: null,
-      res: null,
-    }
-  ): Promise<void> {
+  public async handleError(err: Error, severity: String = "error"): Promise<void> {
+    if (process.env.NODE_ENV === "TEST") return;
     switch (severity) {
       case "http":
         this._logger.http(err);

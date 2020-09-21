@@ -39,7 +39,7 @@ app.use(
     customFormatErrorFn: (error: GraphQLError) => {
       // log error
       (req as any).log = error.message;
-      errorHandler.handleError(error, "http", { req, res });
+      errorHandler.handleError(error, "http");
 
       if (error.message.includes("Cast to ObjectId failed")) error.message = "Invalid ID.";
       const formattedError: {
